@@ -6,9 +6,10 @@ extern int line_counter;
 %}
 
 
-%token PACKAGE IMPORTS FUNCTION id VAR EOL CONST CONST_ID METHOD IF ELSE SWITCH CASE FALLTHROUGH DEFAULT FOR
+%token PACKAGE IMPORTS FUNCTION id VAR EOL CONST CONST_ID METHOD IF ELSE SWITCH CASE FALLTHROUGH DEFAULT FOR BREAK RANGE
 %token CONST_INT CONST_FLOAT CONST_CHAR CONST_STRING BOOL 
 %token INT STRING COMPLEX BYTE FLOAT RUNE UINT BOOL_TYPE
+%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON
 
 %left '+' '-'
 %left '*' '/'
@@ -25,10 +26,12 @@ prog: PACKAGE IMPORTS {printf("Find package and import\n");}
 
 var_block: VAR '(' var_definition ')' {printf("varblock\n");}
 
-variables: VAR variables {printf("var\n");} 
-	| simple_definition
-	| other_definitions
-	| typeless_def
+variables: VAR id_list definitions
+		| id_list definitions
+
+definitions: other_definitions 
+		| simple_definition 
+		| typeless_def
 	
 var_definition: var_def_list 
 			|
@@ -36,21 +39,24 @@ var_definition: var_def_list
 var_def_list: var_def_list var_def
 			| var_def
 
-var_def: id '=' data
+var_def: id EQ data
 		| id type
 		
 data_list: data_list ',' data
-		| data
+		| data 
 
-simple_definition: id_list type '=' data_list 
-				| id_list type {printf("type def\n");}
+simple_definition: type EQ data_list 
+				| type {printf("type def\n");}
 				
-typeless_def: id_list ':''=' data_list {printf("typeless definition\n");}
-			| id_list '=' data_list {printf("typeless def\n");}
+				
+typeless_def: PEQ data_list {printf("typeless definition\n");}
 				
 
-other_definitions: id_list '=' id_list
-				| id_list '=' expression
+other_definitions: EQ other 
+
+other: id_list 
+	| expression
+	| data_list 
 				
 
 const_block: CONST '(' const_block_definition ')' {printf("constblock\n");}
@@ -61,10 +67,10 @@ const_block_definition: const_block_def_list
 const_block_def_list: const_block_def_list const_block_def
 					| const_block_def
 
-const_block_def: CONST_ID '=' data
+const_block_def: CONST_ID EQ data
 
-const_def: CONST CONST_ID type '=' data {printf("const type definition\n");}
-		| CONST CONST_ID '=' data {printf("const typeless definition\n");}
+const_def: CONST CONST_ID type EQ data {printf("const type definition\n");}
+		| CONST CONST_ID EQ data {printf("const typeless definition\n");}
 		
 		
 expression:  expression operator expression_args
@@ -75,15 +81,23 @@ expression_args: id
 				| data
 
 
-// !!!!!!!!!!!				
-single_expression: id single_operator
+single_expression: id INC
+				| id DEC
 
 				
-single_operator: '+''+'
-				| '-''-'
-		
+logical_expression: logical_expression logical_operator log_arguments
+				| log_arguments logical_operator log_arguments
+				| '!' '(' logical_expression ')'
+				
+log_arguments: id logical_condition
+			
+logical_condition: eq_op id
+				|
 
-id_list: id_list ',' id
+logical_operator: AND
+				| OR
+
+id_list: id_list ',' id 
 		| id
 
 
@@ -114,14 +128,15 @@ if_block: IF conditions '{' statements '}' {printf("ifblock!\n");}
 else_block: '{' statements '}' 
 		| if_block
 
-conditions: conditions ';' condition
+conditions: conditions SEMICOLON condition
 		| condition
+		| id
+		|
 
 
 // sr 
-condition: cond_args
-		| cond_args eq_op cond_args 
-		| id ':''=' data
+condition: cond_args eq_op cond_args 
+		| id PEQ data
 
 cond_args: //methods
 		| data
@@ -135,11 +150,11 @@ switch_case: SWITCH switch_arg '{' cases default_case '}'
 switch_arg: switch_arg_list
 			|
 ;			
-switch_arg_list: switch_arg_list ';' switch_arg
+switch_arg_list: switch_arg_list SEMICOLON switch_arg
 				| switch_arg
 ;
 switch_arg: id
-			| id ':''='methods ';'
+			| id PEQ methods SEMICOLON
 			| methods
 ;
 
@@ -162,23 +177,42 @@ case_args: data_list
 case_block: statements
 		| statements FALLTHROUGH
 ;
-//
-eq_op: '=''='
-	| '>''='
-	| '<''='
-	| '!''='
+
+eq_op: EQUAL 
+	| NOTEQUAL
+	| GREATEROREQUAL 
+	| LESSOREQUAL
 	| '>'
 	| '<'
 
-		
+// FOR LOOPS
+// BREAD INSIDE IF 
+for_loop: FOR for_def SEMICOLON for_cond SEMICOLON for_act '{' statement '}'
+		| FOR for_cond '{' statements '}'
+
+// PEQ ?
+for_def:  id_list typeless_def
+		| id_list other_definitions
+		| PEQ 
+
+
+
+for_cond: condition
+		|
+
+for_act: single_expression
+		| expression
+
+			
 actions: variables
 		| methods
 		| if_block
 		| expression
-		//| single_expression
+		| single_expression
 		| switch_case
 		| function_call
-		//| for_loop
+		| logical_expression
+		| for_loop
 ;
 
 function_call: id '(' method_arguments ')'
@@ -189,11 +223,16 @@ operator: '+'
 		| '%'
 		| '/'
 		| '*'	
-		| '-''='
-		| '+''='
-		| '*''='
-		| '/''='
-		| '%''='
+		| SUBEQ 
+		| PLUSEQ 
+		| MULEQ 
+		| DIVEQ 
+		| MODEQ
+		| '&'
+		| '|'
+		| XOR
+		| LSHIFT
+		| RSHIFT
 ;		
 type: INT
 	| STRING
@@ -201,7 +240,7 @@ type: INT
 	| BYTE
 	| FLOAT
 	| RUNE
-	| UINT
+	| UINT 
 	| BOOL_TYPE
 ;
 data: CONST_INT
@@ -226,7 +265,8 @@ arguments: data
 		| expression
 		| CONST_ID
 		| '&' id
-		//| condition
+		| condition
+		| logical_expression
 ;
 
 

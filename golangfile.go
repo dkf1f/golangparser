@@ -1,14 +1,36 @@
 
 
 package main
-
+ 
 import "fmt"
-
+ 
 func main() {
-	var x, y, z = 10, 20, 30
-
-	fmt.Println(x < y && x > z)
-	fmt.Println(x < y || x > z)
-	fmt.Println(!(x == y && x > z))
+ 
+	k := 1
+	for ; k <= 10; k++ {
+		fmt.Println(k)
+	}
+ 
+	k := 1
+	for k <= 10 {
+		fmt.Println(k)
+		k++
+	}
+ 
+	for k := 1; ; k++ {
+		fmt.Println(k)
+		if k == 10 {
+			//break
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
 
