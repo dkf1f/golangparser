@@ -1,4 +1,5 @@
 %{
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 extern int line_counter;
@@ -272,18 +273,30 @@ arguments: data
 
 %%
 
-int main()
+int main(int argc, char **argv)
 {
+#ifdef __linux__ 
     yyparse();
-    //printf("Parsing Successful\n");
-    return 0;
+
+#elif _WIN32
+    FILE* inputStream = fopen(argv[1], "r");
+    if (inputStream == NULL)
+    {
+        printf("Can't found input file yyin.txt\n");
+        exit(-1);
+	}
+    yyset_in(inputStream);
+	yyparse();
+    fclose(inputStream);
+#endif
+	return 0;
+
 }
 
 int yyerror(const char *msg)
 {
-	printf("Parsing Failed\nLine Number: %d %s\n",line_counter,msg);
-	//success = 0;
-	return 0;
+	printf("Syntax error\n");
+
 }
 
 yywrap() {}

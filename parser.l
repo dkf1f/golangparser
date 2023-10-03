@@ -1,5 +1,6 @@
 %{
 	#include <stdio.h>
+	#include <stdlib.h>
 	#include "parser.tab.h"
 	int line_counter = 0;
 %}
@@ -43,7 +44,7 @@
 "-="									{return SUBEQ;}
 "+="									{return PLUSEQ;}
 "*="									{return MULEQ;}
-"\="									{return DIVEQ;}
+"\\="									{return DIVEQ;}
 "%="									{return MODEQ;}
 "=="									{return EQUAL;}
 "!="									{return NOTEQUAL;}
