@@ -8,29 +8,51 @@
 %%
 '\n'									{line_counter++;}
 "//"(\\.|[^\n])*[\n]					;
+[/][*]([^*]|[*]*[^*/])*[*]+[/]          ; 
 "import"([ ]+)?((\(([ \t\n\v\r]*(\"(\\.|[^"()]*)+\"))+[ \t\n\v\r]*\))|(\"(\\.*[^()]|[^"()])*\"))		{return IMPORTS;}
 "package"[ ]+[a-zA-z_][a-zA-z_0-9]* 	{return PACKAGE;}
-"func"									{return FUNCTION;}
-"string"								{return STRING;}
-"complex"								{return COMPLEX;}
-"uint"((16)|(32)|(64))? 				{return UINT;}
-"int"((16)|(32)|(64))?					{return INT;}
-"byte"									{return BYTE;}
-"float"((16)|(32)|(64))?				{return FLOAT;}
-"rune"									{return RUNE;}
-"var"									{return VAR;}
+"break"									{return BREAK;}
+"case"									{return CASE;}
+"chan"									{return CHAN;}
 "const"									{return CONST;}
-"bool"									{return BOOL_TYPE;}
-"true"|"false"							{return BOOL;}
-"if"									{return IF;}
+"continue"								{return CONTINUE;}
+"default"								{return DEFAULT;}
+"defer"									{return DEFER;}
 "else"									{return ELSE;}
 "fallthrough"							{return FALLTHROUGH;}
-"switch"								{return SWITCH;}
-"case"									{return CASE;}
-"default"								{return DEFAULT;}
 "for"									{return FOR;}
-"break"									{return BREAK;}
+"func"									{return FUNCTION;}
+"go"									{return GO;}
+"goto"									{return GOTO;}
+"if"									{return IF;}
+"interface"								{return INTERFACE;}
+"map"									{return MAP;}
 "range"									{return RANGE;}
+"return"								{return RETURN;}
+"select"								{return SELECT;}
+"struct"								{return STRUCT;}
+"switch"								{return SWITCH;}
+"type"									{return TYPE;}
+"var"									{return VAR;}
+
+
+"any"									{return ANYTYPE;}
+"bool"									{return BOOL_TYPE;}
+"byte"									{return BYTE;}
+"comparable"							{return COMPARABLE;}
+"string"								{return STRING;}
+"complex"((64)|(128))					{return COMPLEXTYPE;}
+"error"									{return ERRORTYPE;}
+"uint"((8)|(16)|(32)|(64))? 			{return UINT;}
+"uintptr"								{return UINTPTR;}
+"int"((8)|(16)|(32)|(64))?				{return INT;}
+"float"((32)|(64))						{return FLOAT;}
+"rune"									{return RUNE;}
+
+"true"|"false"							{return BOOL;}
+"iota"									{return IOTA;}
+
+
 ";"										{return SEMICOLON;}
 "^"										{return XOR;}
 ":="									{return PEQ;}
@@ -50,15 +72,26 @@
 "!="									{return NOTEQUAL;}
 ">="									{return GREATEROREQUAL;}
 "<="									{return LESSOREQUAL;}
-[a-zA-z]*(\.[a-zA-z]+)					{return METHOD;}
+
+[a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
 [A-Z]+									{return CONST_ID;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
-[0-9]+									{return CONST_INT;}
-[0-9]+"."[0-9]+							{return CONST_FLOAT;}
-[a-zA-z_0-9]+						 	{return id;}
+
+0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
+0[bB]?[_]?([0-9]+[_]?)+					{return CONST_BIN_ERR;}
+
+0[oO]?[_]?([0-7]+[_]?)+					{return CONST_OCTAL;}
+
+0[xX]?[_]?([0-9A-Fa-f]+[_]?)+			{return CONST_HEX;}
+0[xX]((([_]?([0-9a-fA-F][_]?)+)\.([0-9a-fA-F][_]?)+)|([_]?([0-9a-fA-F][_]?)+)|(\.([0-9a-fA-F][_]?)+))		{return FLOAT_HEX;}
+[pP][+-]+								{return HEX_EXPONENT;}
+
+([0-9]+[_]?[0-9]+)+|0					{return CONST_INT;}
+"-"([0-9]+[_]?[0-9]+)+|0				{return NEG_CONST_INT;}
+[eE][+-]?								{return EXPONENT;}
+[a-zA-Z_][A-Za-z_0-9]*					{return id;}
 ";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"					{return yytext[0];}
 "'"."'"									{return CONST_CHAR;}
-[/][*]([^*]|[*]*[^*/])*[*]+[/]          ;
 [ \t\n]									;
 
 																    
