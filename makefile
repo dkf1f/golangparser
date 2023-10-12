@@ -2,9 +2,9 @@
 
 all: 
 	make clean 
-	lex --nounistd --always-interactive -D=_CRT_SECURE_NO_WARNINGS -D=_CRT_SECURE_NO_DEPRECATE parser.l
-	bison -d parser.y
-	gcc -o parser parser.tab.c parser.tab.h lex.yy.c
+	flex lab.lex
+	bison -y -d lab.yacc
+	g++ y.tab.c lex.yy.c -o example
 	
 clean:
-	rm -rf parser parser.tab.h parser.tab.c lex.yy.c
+	rm -rf example y.tab.h y.tab.c lex.yy.c
