@@ -1,4 +1,5 @@
 %{
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 extern int line_counter;
@@ -6,10 +7,15 @@ extern int line_counter;
 %}
 
 
-%token PACKAGE IMPORTS FUNCTION id VAR EOL CONST CONST_ID METHOD IF ELSE SWITCH CASE FALLTHROUGH DEFAULT FOR BREAK RANGE
-%token CONST_INT CONST_FLOAT CONST_CHAR CONST_STRING BOOL 
-%token INT STRING COMPLEX BYTE FLOAT RUNE UINT BOOL_TYPE
-%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON
+%token PACKAGE IMPORTS FUNCTION id VAR EOL CONST CONST_ID METHOD IF ELSE SWITCH CASE FALLTHROUGH DEFAULT FOR BREAK RANGE NEW SELECT RETURN MAP GO GOTO INTERFACE CHAN CONTINUE
+%token DEFER
+
+%token CONST_INT CONST_CHAR CONST_STRING BOOL IOTA NEG_CONST_INT CONST_OCTAL CONST_HEX CONST_BIN  FLOAT_HEX
+%token CONST_INT_ERR CONST_BIN_ERR
+%token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
+
+%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON 
+%token EXPONENT HEX_EXPONENT
 
 %left '+' '-'
 %left '*' '/'
@@ -22,12 +28,28 @@ prog: PACKAGE IMPORTS {printf("Find package and import\n");}
 	| prog const_block
 	| prog const_def
 	| prog body
+	| prog struct_def
 ;
 
+struct_def: TYPE id STRUCT '{' struct_body '}'
+
+
+struct_body: 
+			| struct_list
+
+struct_list: struct_list struct_contain
+			| struct_contain
+
+struct_contain: id type
+			| id STRUCT '{' struct_body '}'
+
+struct_init: id '{'data_list'}'
+				
 var_block: VAR '(' var_definition ')' {printf("varblock\n");}
 
 variables: VAR id_list definitions
 		| id_list definitions
+		| METHOD other_definitions
 
 definitions: other_definitions 
 		| simple_definition 
@@ -50,6 +72,7 @@ simple_definition: type EQ data_list
 				
 				
 typeless_def: PEQ data_list {printf("typeless definition\n");}
+			| PEQ id '{' list '}'
 				
 
 other_definitions: EQ other 
@@ -57,6 +80,15 @@ other_definitions: EQ other
 other: id_list 
 	| expression
 	| data_list 
+	| METHOD 
+	| id '{' list '}'
+	
+	
+list: data_list
+	| struct_list
+
+struct_list: struct_list ',' id ':' data
+			| id ':' data
 				
 
 const_block: CONST '(' const_block_definition ')' {printf("constblock\n");}
@@ -79,6 +111,8 @@ expression:  expression operator expression_args
 
 expression_args: id
 				| data
+				| METHOD
+				| '(' expression ')'
 
 
 single_expression: id INC
@@ -102,12 +136,19 @@ id_list: id_list ',' id
 
 
 // FUNCTION BODY
-body: FUNCTION id '(' parameters ')' '{' statements '}' {printf("Find function defenition\n");}
+body: FUNCTION return_value id '(' parameters ')' type_def '{' statements '}' {printf("Find function defenition\n");}
 ;
 
+type_def: 
+		| type
+;
+return_value:
+			| '(' id type ')'
+			//| id structure
+;
 parameters: parameter_list 
 			| 
-
+;
 parameter_list: parameter_list ',' type id
 				| type id
 ;
@@ -213,6 +254,7 @@ actions: variables
 		| function_call
 		| logical_expression
 		| for_loop
+		| struct_init
 ;
 
 function_call: id '(' method_arguments ')'
@@ -236,20 +278,41 @@ operator: '+'
 ;		
 type: INT
 	| STRING
-	| COMPLEX
+	| COMPLEXTYPE
 	| BYTE
 	| FLOAT
 	| RUNE
 	| UINT 
 	| BOOL_TYPE
 ;
+
 data: CONST_INT
-	| CONST_FLOAT
+	| CONST_OCTAL
+	| CONST_HEX
+	| CONST_BIN
+	| NEG_CONST_INT
 	| CONST_CHAR
 	| CONST_STRING
 	| BOOL
 	| methods
-;	
+	| float_lit
+;
+
+/**********************************************************************************************/
+float_lit: decimal_float_lit 
+		| hex_float_lit
+;
+
+decimal_float_lit: CONST_INT '.' _decimal_float_lit
+
+;
+decimal_exponent: EXPONENT CONST_INT
+;
+hex_exponent: HEX_EXPONENT CONST_INT
+
+hex_float_lit: FLOAT_HEX hex_exponent
+/**********************************************************************************************/
+
 methods: METHOD '(' method_arguments ')' {printf("Method match\n");}
 ;
 method_arguments: arg_list
@@ -267,23 +330,37 @@ arguments: data
 		| '&' id
 		| condition
 		| logical_expression
+		| struct_init
+		| METHOD
 ;
 
 
 %%
 
-int main()
+int main(int argc, char **argv)
 {
+#ifdef __linux__ 
     yyparse();
-    //printf("Parsing Successful\n");
-    return 0;
+
+#elif _WIN32
+    FILE* inputStream = fopen(argv[1], "r");
+    if (inputStream == NULL)
+    {
+        printf("Can't found input file yyin.txt\n");
+        exit(-1);
+	}
+    yyset_in(inputStream);
+	yyparse();
+    fclose(inputStream);
+#endif
+	return 0;
+
 }
 
 int yyerror(const char *msg)
 {
-	printf("Parsing Failed\nLine Number: %d %s\n",line_counter,msg);
-	//success = 0;
-	return 0;
+	printf("Syntax error\n");
+
 }
 
 yywrap() {}
