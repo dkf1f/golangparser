@@ -80,18 +80,19 @@
 [a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
 
-0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
-0[bB]?[_]?([0-9]+[_]?)+					{return CONST_BIN_ERR;}
+[-]?0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
+[-]?0[bB]?[_]?([0-9]+[_]?)+					{return CONST_BIN_ERR;}
 
-0[oO]?[_]?([0-7]+[_]?)+					{return CONST_OCTAL;}
-0[xX]?[_]?([0-9A-Fa-f]+[_]?)+			{return CONST_HEX;}
-0[xX]((([_]?([0-9a-fA-F][_]?)+)\.([0-9a-fA-F][_]?)+)|([_]?([0-9a-fA-F][_]?)+)|(\.([0-9a-fA-F][_]?)+))		{return FLOAT_HEX;}
-[pP][+-]+								{return HEX_EXPONENT;}
+[-]?0[oO]?[_]?([0-7]+[_]?)+					{return CONST_OCTAL;}
+[-]?0[xX]?[_]?([0-9A-Fa-f]+[_]?)+			{return CONST_HEX;}
+[-]?0[xX]((([_]?([0-9a-fA-F][_]?)+)\.([0-9a-fA-F][_]?)+)|([_]?([0-9a-fA-F][_]?)+)|(\.([0-9a-fA-F][_]?)+))		{return FLOAT_HEX;}
 
-[0-9]|([0-9]+[.]?[_]?[0-9]+)+|0			{return CONST_INT;}
-"-"([0-9]|[0-9]+[.]?[_]?[0-9]+)+|0		{return NEG_CONST_INT;}
-[eE][+-]?								{return EXPONENT;}
+[-]?([0-9]+[_]?[0-9]*)+					{return CONST_INT;}
+(([-]?([0-9]+[_]?[0-9]*)+)(([.]([-]?([0-9]+[_]?[0-9]*)+)?([eE][+-]?([0-9]+[_]?[0-9]*)+)?)|([eE][+-]?([0-9]+[_]?[0-9]*)+)))|([.]([-]?([0-9]+[_]?[0-9]*)+)([eE][+-]?([0-9]+[_]?[0-9]*)+)?)		{return DECIMAL_FLOAT_LIT;}
+
+[-]?[0][xX]([_]?(([0-9A-Fa-f]+[_]?)+)([.]((([0-9A-Fa-f]+[_]?)+))?)?|([.](([0-9A-Fa-f]+[_]?)+)))([pP][+-]?([-]?([0-9]+[_]?[0-9]*)+)) {return HEX_FLOAT_LIT;}
 [a-zA-Z_][A-Za-z_0-9]*					{return id;}
+
 ";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"					{return yytext[0];}
 "'"."'"									{return CONST_CHAR;}
 (\r\n)                                  {yylval++;line_counter++;}

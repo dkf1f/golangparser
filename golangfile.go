@@ -3,8 +3,7 @@ import "fmt"
  
 func main() {
      
-    a := 8
-    b := 8
+	e = 11.1
     if a < b {
         fmt.Println("a меньше b")
     }else if a > b{
