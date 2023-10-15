@@ -74,6 +74,8 @@
 "!="									{return NOTEQUAL;}
 ">="									{return GREATEROREQUAL;}
 "<="									{return LESSOREQUAL;}
+"&^"									{return AMP_EXP;}
+"..."									{return POINT;}
 
 [a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
@@ -86,8 +88,8 @@
 0[xX]((([_]?([0-9a-fA-F][_]?)+)\.([0-9a-fA-F][_]?)+)|([_]?([0-9a-fA-F][_]?)+)|(\.([0-9a-fA-F][_]?)+))		{return FLOAT_HEX;}
 [pP][+-]+								{return HEX_EXPONENT;}
 
-([0-9]+[_]?[0-9]+)+|0					{return CONST_INT;}
-"-"([0-9]+[_]?[0-9]+)+|0				{return NEG_CONST_INT;}
+[0-9]|([0-9]+[.]?[_]?[0-9]+)+|0			{return CONST_INT;}
+"-"([0-9]|[0-9]+[.]?[_]?[0-9]+)+|0		{return NEG_CONST_INT;}
 [eE][+-]?								{return EXPONENT;}
 [a-zA-Z_][A-Za-z_0-9]*					{return id;}
 ";"|"="|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"					{return yytext[0];}

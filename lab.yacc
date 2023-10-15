@@ -21,7 +21,7 @@
 %token CONST_INT_ERR CONST_BIN_ERR
 %token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
 
-%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON 
+%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT
 %token EXPONENT HEX_EXPONENT
 
 %left '+' '-'
@@ -29,19 +29,20 @@
 
 %%
 prog: PACKAGE IMPORTS {printf("Find package and import\n");} 
-	| prog var_block 
 	| prog variables
-	| prog const_block
-	| prog const_def
 	| prog body
 	| prog struct_def
 ;
 
-var_block: VAR '(' var_definition ')' {printf("varblock\n");}
 
 variables: VAR id_list definitions
+        | CONST id_list definitions
 		| id_list definitions
+		| VAR '(' var_definition ')' {printf("varblock\n");}
+		| CONST '(' id_list ')'
+		| CONST '(' const_definition ')'
 
+		
 //func_for_var: id '(' data_list')'
 
 definitions: other_definitions 
@@ -50,7 +51,48 @@ definitions: other_definitions
 	
 var_definition: var_def_list 
 			|
+			
 	
+/* CONSTANTS DEFINITION begin */
+const_definition:begin_const_definition
+			| id_list id_list
+            | const_definition begin_const_definition
+			| const_definition id_list
+
+begin_const_definition:id_list EQ expression
+			|id_list EQ expression_args
+			|id_list type EQ expression
+			|id_list type EQ expression_args
+			|begin_const_definition ','expression
+			|begin_const_definition ',' expression_args
+
+/* CONSTANTS DEFINITION final*/
+
+/*MASS_start*/
+mass:'{'id_list'}'
+    |'{'data_list'}'
+	|'{'data_list',''}'
+	|'{'mass_len_list'}'
+	|'{''}'
+
+
+mass_len: '['expression_args']'
+	|'['expression']'
+	|'['']'
+	|'['POINT']'
+	| mass_len'*'
+	
+mass_index:	'['data']'
+          | mass_index '['data']'
+	
+mass_len_list: data ':' /*[3]string{2: "blue", 0: "red", 1: "green"}*/
+			|mass_len_list other
+			|mass_len_list ','
+			|mass_len_list data ':'
+	
+/*MASS_final*/	
+
+		
 var_def_list: var_def_list var_def
 			| var_def
 
@@ -62,15 +104,22 @@ var_def: id_list EQ data_list
 data_list: data_list ',' data
 		| data 
 
-simple_definition: type EQ data_list 
+simple_definition: type EQ data_list
+                | type EQ expression 
+				| type EQ condition
+				| type EQ type mass
 				| type {printf("type def\n");}
 				
 				
 typeless_def: PEQ data_list {printf("typeless definition\n");}
 			| PEQ id '{' list '}'
+			| PEQ type mass
 				
 
-other_definitions: EQ other 
+other_definitions: EQ other
+            |EQ condition 
+			|EQ type mass
+
 
 other: id_list 
 	| expression
@@ -98,22 +147,7 @@ struct_init: id '{'data_list'}'
 
 /* STRUCTURES */
 
-/* CONSTANTS DEFINITION */
-
-const_block: CONST '(' const_block_definition ')' {printf("constblock\n");}
-
-const_block_definition: const_block_def_list
-					|
-					
-const_block_def_list: const_block_def_list const_block_def
-					| const_block_def
-
-const_block_def: id EQ data
-
-const_def: CONST id type EQ data {printf("const type definition\n");}
-		| CONST id EQ data {printf("const typeless definition\n");}
 		
-/* CONSTANTS DEFINITION */
 		
 expression:  expression operator expression_args
 			| expression_args operator expression_args {printf("expression\n");}
@@ -121,11 +155,15 @@ expression:  expression operator expression_args
 
 expression_args: id
 				| data
+				|id mass_index
 				| METHOD
 				| '(' expression ')'
 
+
 single_expression: id INC
 				| id DEC
+				| id mass_index INC
+				| id mass_index DEC
 
 				
 logical_expression: logical_expression logical_operator log_arguments
@@ -133,8 +171,10 @@ logical_expression: logical_expression logical_operator log_arguments
 				| '!' '(' logical_expression ')'
 				
 log_arguments: id logical_condition
+            |id mass_index logical_condition
 			
 logical_condition: eq_op id
+				|eq_op id mass_index
 				|
 
 logical_operator: AND
@@ -142,17 +182,23 @@ logical_operator: AND
 
 id_list: id_list ',' id 
 		| id
+		| id mass_index
+		|id_list ',' id mass_index
+		|EXPONENT /*Это не очень хорошо((*/
 ;
 
 /* FUNCTION BODY */
-body: FUNCTION return_value id '(' parameters ')' type_def '{' statements '}' {printf("Find function defenition\n");}
+body: FUNCTION return_value id '(' parameters ')' type '{' statements '}' {printf("Find function defenition\n");}
+|FUNCTION return_value id '(' parameters ')' '{' statements '}' {printf("Find function defenition\n");}
 ;
 
-type_def: 
-		| type
+//type_def: 
+//		| type
+
 ;
 return_value:
 			| '(' id type ')'
+			| '(' id mass_index type ')'
 			//| id structure
 ;
 parameters: parameter_list 
@@ -160,6 +206,7 @@ parameters: parameter_list
 
 parameter_list: parameter_list ',' type id
 				| type id
+				| type id mass_index
 ;
 statements: statement
 			| 
@@ -181,16 +228,19 @@ else_block: '{' statements '}'
 conditions: conditions SEMICOLON condition
 		| condition
 		| id
-		|
+		| id mass_index		
 
 
 // sr 
 condition: cond_args eq_op cond_args 
 		| id PEQ data
+		|id mass_index PEQ data
+		| condition logical_operator condition
 
 cond_args: //methods
 		| data
 		| id
+		| id mass_index
 ;
 
 // SWITCH CASE 
@@ -228,10 +278,14 @@ cond_args: //methods
 //		| statements FALLTHROUGH
 //;
 
+switch_case:SWITCH 
+
+
 eq_op: EQUAL 
 	| NOTEQUAL
 	| GREATEROREQUAL 
 	| LESSOREQUAL
+	| AMP_EXP
 	| '>'
 	| '<'
 
@@ -262,11 +316,12 @@ actions: variables
 		| function_call
 		| logical_expression
 		| for_loop
-		| var_block
+		//| var_block
 		//| switch_case
 ;
 
 function_call: id '(' method_arguments ')'
+             |id mass_index '(' method_arguments ')'
 ;
 
 operator: '+'
@@ -293,17 +348,21 @@ type: INT
 	| RUNE
 	| UINT 
 	| BOOL_TYPE
+	| mass_len type
+	//| type mass
 ;
 data: CONST_BIN
 	| CONST_OCTAL
 	| CONST_HEX
 	| CONST_INT
-	//| NEG_CONST_INT
+	| NEG_CONST_INT
 	| CONST_CHAR
 	| CONST_STRING
 	| BOOL
-	//| methods
 	| float_lit
+	| IOTA
+		//| methods
+		//| NEG_CONST_INT
 ;
 
 /* FLOAT LITERALS */
@@ -334,9 +393,11 @@ arg_list: arg_list ',' arguments
 // 2 rr
 arguments: data
 		| id
+		| id mass_index
 		| methods
 		| expression
 		| '&' id
+		| '&' id mass_index
 		| condition
 		| logical_expression
 		| struct_init

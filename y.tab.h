@@ -1,22 +1,23 @@
-/* A Bison parser, made by GNU Bison 3.8.2.  */
 
-/* Bison interface for Yacc-like parsers in C
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
-   Inc.
-
+/* Skeleton interface for Bison's Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
+   
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -27,115 +28,96 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
-   especially those whose name start with YY_ or yy_.  They are
-   private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token kinds.  */
+/* Tokens.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-  enum yytokentype
-  {
-    YYEMPTY = -2,
-    YYEOF = 0,                     /* "end of file"  */
-    YYerror = 256,                 /* error  */
-    YYUNDEF = 257,                 /* "invalid token"  */
-    PACKAGE = 258,                 /* PACKAGE  */
-    IMPORTS = 259,                 /* IMPORTS  */
-    FUNCTION = 260,                /* FUNCTION  */
-    id = 261,                      /* id  */
-    VAR = 262,                     /* VAR  */
-    EOL = 263,                     /* EOL  */
-    CONST = 264,                   /* CONST  */
-    METHOD = 265,                  /* METHOD  */
-    IF = 266,                      /* IF  */
-    ELSE = 267,                    /* ELSE  */
-    SWITCH = 268,                  /* SWITCH  */
-    CASE = 269,                    /* CASE  */
-    FALLTHROUGH = 270,             /* FALLTHROUGH  */
-    DEFAULT = 271,                 /* DEFAULT  */
-    FOR = 272,                     /* FOR  */
-    BREAK = 273,                   /* BREAK  */
-    RANGE = 274,                   /* RANGE  */
-    NEW = 275,                     /* NEW  */
-    SELECT = 276,                  /* SELECT  */
-    RETURN = 277,                  /* RETURN  */
-    MAP = 278,                     /* MAP  */
-    GO = 279,                      /* GO  */
-    GOTO = 280,                    /* GOTO  */
-    INTERFACE = 281,               /* INTERFACE  */
-    CHAN = 282,                    /* CHAN  */
-    CONTINUE = 283,                /* CONTINUE  */
-    DEFER = 284,                   /* DEFER  */
-    CONST_INT = 285,               /* CONST_INT  */
-    CONST_CHAR = 286,              /* CONST_CHAR  */
-    CONST_STRING = 287,            /* CONST_STRING  */
-    BOOL = 288,                    /* BOOL  */
-    IOTA = 289,                    /* IOTA  */
-    NEG_CONST_INT = 290,           /* NEG_CONST_INT  */
-    CONST_OCTAL = 291,             /* CONST_OCTAL  */
-    CONST_HEX = 292,               /* CONST_HEX  */
-    CONST_BIN = 293,               /* CONST_BIN  */
-    FLOAT_HEX = 294,               /* FLOAT_HEX  */
-    CONST_INT_ERR = 295,           /* CONST_INT_ERR  */
-    CONST_BIN_ERR = 296,           /* CONST_BIN_ERR  */
-    INT = 297,                     /* INT  */
-    STRING = 298,                  /* STRING  */
-    COMPLEXTYPE = 299,             /* COMPLEXTYPE  */
-    BYTE = 300,                    /* BYTE  */
-    FLOAT = 301,                   /* FLOAT  */
-    RUNE = 302,                    /* RUNE  */
-    UINT = 303,                    /* UINT  */
-    BOOL_TYPE = 304,               /* BOOL_TYPE  */
-    TYPE = 305,                    /* TYPE  */
-    STRUCT = 306,                  /* STRUCT  */
-    UINTPTR = 307,                 /* UINTPTR  */
-    ERRORTYPE = 308,               /* ERRORTYPE  */
-    ANYTYPE = 309,                 /* ANYTYPE  */
-    COMPARABLE = 310,              /* COMPARABLE  */
-    EQ = 311,                      /* EQ  */
-    INC = 312,                     /* INC  */
-    DEC = 313,                     /* DEC  */
-    SUBEQ = 314,                   /* SUBEQ  */
-    PLUSEQ = 315,                  /* PLUSEQ  */
-    MULEQ = 316,                   /* MULEQ  */
-    DIVEQ = 317,                   /* DIVEQ  */
-    MODEQ = 318,                   /* MODEQ  */
-    EQUAL = 319,                   /* EQUAL  */
-    NOTEQUAL = 320,                /* NOTEQUAL  */
-    GREATEROREQUAL = 321,          /* GREATEROREQUAL  */
-    LESSOREQUAL = 322,             /* LESSOREQUAL  */
-    AND = 323,                     /* AND  */
-    OR = 324,                      /* OR  */
-    LSHIFT = 325,                  /* LSHIFT  */
-    RSHIFT = 326,                  /* RSHIFT  */
-    PEQ = 327,                     /* PEQ  */
-    XOR = 328,                     /* XOR  */
-    SEMICOLON = 329,               /* SEMICOLON  */
-    EXPONENT = 330,                /* EXPONENT  */
-    HEX_EXPONENT = 331             /* HEX_EXPONENT  */
-  };
-  typedef enum yytokentype yytoken_kind_t;
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     PACKAGE = 258,
+     IMPORTS = 259,
+     FUNCTION = 260,
+     id = 261,
+     VAR = 262,
+     EOL = 263,
+     CONST = 264,
+     METHOD = 265,
+     IF = 266,
+     ELSE = 267,
+     SWITCH = 268,
+     CASE = 269,
+     FALLTHROUGH = 270,
+     DEFAULT = 271,
+     FOR = 272,
+     BREAK = 273,
+     RANGE = 274,
+     NEW = 275,
+     SELECT = 276,
+     RETURN = 277,
+     MAP = 278,
+     GO = 279,
+     GOTO = 280,
+     INTERFACE = 281,
+     CHAN = 282,
+     CONTINUE = 283,
+     DEFER = 284,
+     CONST_INT = 285,
+     CONST_CHAR = 286,
+     CONST_STRING = 287,
+     BOOL = 288,
+     IOTA = 289,
+     NEG_CONST_INT = 290,
+     CONST_OCTAL = 291,
+     CONST_HEX = 292,
+     CONST_BIN = 293,
+     FLOAT_HEX = 294,
+     CONST_INT_ERR = 295,
+     CONST_BIN_ERR = 296,
+     INT = 297,
+     STRING = 298,
+     COMPLEXTYPE = 299,
+     BYTE = 300,
+     FLOAT = 301,
+     RUNE = 302,
+     UINT = 303,
+     BOOL_TYPE = 304,
+     TYPE = 305,
+     STRUCT = 306,
+     UINTPTR = 307,
+     ERRORTYPE = 308,
+     ANYTYPE = 309,
+     COMPARABLE = 310,
+     EQ = 311,
+     INC = 312,
+     DEC = 313,
+     SUBEQ = 314,
+     PLUSEQ = 315,
+     MULEQ = 316,
+     DIVEQ = 317,
+     MODEQ = 318,
+     EQUAL = 319,
+     NOTEQUAL = 320,
+     GREATEROREQUAL = 321,
+     LESSOREQUAL = 322,
+     AND = 323,
+     OR = 324,
+     LSHIFT = 325,
+     RSHIFT = 326,
+     PEQ = 327,
+     XOR = 328,
+     SEMICOLON = 329,
+     AMP_EXP = 330,
+     POINT = 331,
+     EXPONENT = 332,
+     HEX_EXPONENT = 333
+   };
 #endif
-/* Token kinds.  */
-#define YYEMPTY -2
-#define YYEOF 0
-#define YYerror 256
-#define YYUNDEF 257
+/* Tokens.  */
 #define PACKAGE 258
 #define IMPORTS 259
 #define FUNCTION 260
@@ -208,21 +190,21 @@ extern int yydebug;
 #define PEQ 327
 #define XOR 328
 #define SEMICOLON 329
-#define EXPONENT 330
-#define HEX_EXPONENT 331
+#define AMP_EXP 330
+#define POINT 331
+#define EXPONENT 332
+#define HEX_EXPONENT 333
 
-/* Value type.  */
+
+
+
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
-
 
 extern YYSTYPE yylval;
 
 
-int yyparse (void);
-
-
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
