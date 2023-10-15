@@ -79,7 +79,7 @@
 
 [a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
-
+[\']([\\](([\\][0-7]{3})|([\\x][0-9A-Fa-f]{2})|([\\u][0-9A-Fa-f]{4})|([\\U][0-9A-Fa-f]{8})|([abfnrtv\'"])|([0-9A-Fa-f])+))	{return RUNE_LIT;}
 [-]?0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
 [-]?0[bB]?[_]?([0-9]+[_]?)+					{return CONST_BIN_ERR;}
 

@@ -3,7 +3,7 @@ import "fmt"
  
 func main() {
      
-	var c float64 = '\x01' 
+	var c float64 = '\x01'
     if a < b {
         fmt.Println("a меньше b")
     }else if a > b{

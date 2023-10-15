@@ -92,43 +92,44 @@ extern int yydebug;
     FLOAT_HEX = 293,               /* FLOAT_HEX  */
     DECIMAL_FLOAT_LIT = 294,       /* DECIMAL_FLOAT_LIT  */
     HEX_FLOAT_LIT = 295,           /* HEX_FLOAT_LIT  */
-    CONST_INT_ERR = 296,           /* CONST_INT_ERR  */
-    CONST_BIN_ERR = 297,           /* CONST_BIN_ERR  */
-    INT = 298,                     /* INT  */
-    STRING = 299,                  /* STRING  */
-    COMPLEXTYPE = 300,             /* COMPLEXTYPE  */
-    BYTE = 301,                    /* BYTE  */
-    FLOAT = 302,                   /* FLOAT  */
-    RUNE = 303,                    /* RUNE  */
-    UINT = 304,                    /* UINT  */
-    BOOL_TYPE = 305,               /* BOOL_TYPE  */
-    TYPE = 306,                    /* TYPE  */
-    STRUCT = 307,                  /* STRUCT  */
-    UINTPTR = 308,                 /* UINTPTR  */
-    ERRORTYPE = 309,               /* ERRORTYPE  */
-    ANYTYPE = 310,                 /* ANYTYPE  */
-    COMPARABLE = 311,              /* COMPARABLE  */
-    EQ = 312,                      /* EQ  */
-    INC = 313,                     /* INC  */
-    DEC = 314,                     /* DEC  */
-    SUBEQ = 315,                   /* SUBEQ  */
-    PLUSEQ = 316,                  /* PLUSEQ  */
-    MULEQ = 317,                   /* MULEQ  */
-    DIVEQ = 318,                   /* DIVEQ  */
-    MODEQ = 319,                   /* MODEQ  */
-    EQUAL = 320,                   /* EQUAL  */
-    NOTEQUAL = 321,                /* NOTEQUAL  */
-    GREATEROREQUAL = 322,          /* GREATEROREQUAL  */
-    LESSOREQUAL = 323,             /* LESSOREQUAL  */
-    AND = 324,                     /* AND  */
-    OR = 325,                      /* OR  */
-    LSHIFT = 326,                  /* LSHIFT  */
-    RSHIFT = 327,                  /* RSHIFT  */
-    PEQ = 328,                     /* PEQ  */
-    XOR = 329,                     /* XOR  */
-    SEMICOLON = 330,               /* SEMICOLON  */
-    AMP_EXP = 331,                 /* AMP_EXP  */
-    POINT = 332                    /* POINT  */
+    RUNE_LIT = 296,                /* RUNE_LIT  */
+    CONST_INT_ERR = 297,           /* CONST_INT_ERR  */
+    CONST_BIN_ERR = 298,           /* CONST_BIN_ERR  */
+    INT = 299,                     /* INT  */
+    STRING = 300,                  /* STRING  */
+    COMPLEXTYPE = 301,             /* COMPLEXTYPE  */
+    BYTE = 302,                    /* BYTE  */
+    FLOAT = 303,                   /* FLOAT  */
+    RUNE = 304,                    /* RUNE  */
+    UINT = 305,                    /* UINT  */
+    BOOL_TYPE = 306,               /* BOOL_TYPE  */
+    TYPE = 307,                    /* TYPE  */
+    STRUCT = 308,                  /* STRUCT  */
+    UINTPTR = 309,                 /* UINTPTR  */
+    ERRORTYPE = 310,               /* ERRORTYPE  */
+    ANYTYPE = 311,                 /* ANYTYPE  */
+    COMPARABLE = 312,              /* COMPARABLE  */
+    EQ = 313,                      /* EQ  */
+    INC = 314,                     /* INC  */
+    DEC = 315,                     /* DEC  */
+    SUBEQ = 316,                   /* SUBEQ  */
+    PLUSEQ = 317,                  /* PLUSEQ  */
+    MULEQ = 318,                   /* MULEQ  */
+    DIVEQ = 319,                   /* DIVEQ  */
+    MODEQ = 320,                   /* MODEQ  */
+    EQUAL = 321,                   /* EQUAL  */
+    NOTEQUAL = 322,                /* NOTEQUAL  */
+    GREATEROREQUAL = 323,          /* GREATEROREQUAL  */
+    LESSOREQUAL = 324,             /* LESSOREQUAL  */
+    AND = 325,                     /* AND  */
+    OR = 326,                      /* OR  */
+    LSHIFT = 327,                  /* LSHIFT  */
+    RSHIFT = 328,                  /* RSHIFT  */
+    PEQ = 329,                     /* PEQ  */
+    XOR = 330,                     /* XOR  */
+    SEMICOLON = 331,               /* SEMICOLON  */
+    AMP_EXP = 332,                 /* AMP_EXP  */
+    POINT = 333                    /* POINT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -175,43 +176,44 @@ extern int yydebug;
 #define FLOAT_HEX 293
 #define DECIMAL_FLOAT_LIT 294
 #define HEX_FLOAT_LIT 295
-#define CONST_INT_ERR 296
-#define CONST_BIN_ERR 297
-#define INT 298
-#define STRING 299
-#define COMPLEXTYPE 300
-#define BYTE 301
-#define FLOAT 302
-#define RUNE 303
-#define UINT 304
-#define BOOL_TYPE 305
-#define TYPE 306
-#define STRUCT 307
-#define UINTPTR 308
-#define ERRORTYPE 309
-#define ANYTYPE 310
-#define COMPARABLE 311
-#define EQ 312
-#define INC 313
-#define DEC 314
-#define SUBEQ 315
-#define PLUSEQ 316
-#define MULEQ 317
-#define DIVEQ 318
-#define MODEQ 319
-#define EQUAL 320
-#define NOTEQUAL 321
-#define GREATEROREQUAL 322
-#define LESSOREQUAL 323
-#define AND 324
-#define OR 325
-#define LSHIFT 326
-#define RSHIFT 327
-#define PEQ 328
-#define XOR 329
-#define SEMICOLON 330
-#define AMP_EXP 331
-#define POINT 332
+#define RUNE_LIT 296
+#define CONST_INT_ERR 297
+#define CONST_BIN_ERR 298
+#define INT 299
+#define STRING 300
+#define COMPLEXTYPE 301
+#define BYTE 302
+#define FLOAT 303
+#define RUNE 304
+#define UINT 305
+#define BOOL_TYPE 306
+#define TYPE 307
+#define STRUCT 308
+#define UINTPTR 309
+#define ERRORTYPE 310
+#define ANYTYPE 311
+#define COMPARABLE 312
+#define EQ 313
+#define INC 314
+#define DEC 315
+#define SUBEQ 316
+#define PLUSEQ 317
+#define MULEQ 318
+#define DIVEQ 319
+#define MODEQ 320
+#define EQUAL 321
+#define NOTEQUAL 322
+#define GREATEROREQUAL 323
+#define LESSOREQUAL 324
+#define AND 325
+#define OR 326
+#define LSHIFT 327
+#define RSHIFT 328
+#define PEQ 329
+#define XOR 330
+#define SEMICOLON 331
+#define AMP_EXP 332
+#define POINT 333
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
