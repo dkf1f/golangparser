@@ -3,7 +3,22 @@
 	#include "y.tab.h"
 	void yyerror(const char *s);
     int line_counter = 0;
-
+	// [a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
+	/*
+	"any"									{return ANYTYPE;}
+"bool"									{return BOOL_TYPE;}
+"byte"									{return BYTE;}
+"comparable"							{return COMPARABLE;}
+"string"								{return STRING;}
+"complex"((64)|(128))					{return COMPLEXTYPE;}
+"error"									{return ERRORTYPE;}
+"uint"((8)|(16)|(32)|(64))? 			{return UINT;}
+"uintptr"								{return UINTPTR;}
+"int"((8)|(16)|(32)|(64))?				{return INT;}
+"float"((32)|(64))						{return FLOAT;}
+"rune"									{return RUNE;}
+	
+	*/
 
 %}
 
@@ -41,19 +56,6 @@
 "type"									{return TYPE;}
 "var"									{return VAR;}
 
-	
-"any"									{return ANYTYPE;}
-"bool"									{return BOOL_TYPE;}
-"byte"									{return BYTE;}
-"comparable"							{return COMPARABLE;}
-"string"								{return STRING;}
-"complex"((64)|(128))					{return COMPLEXTYPE;}
-"error"									{return ERRORTYPE;}
-"uint"((8)|(16)|(32)|(64))? 			{return UINT;}
-"uintptr"								{return UINTPTR;}
-"int"((8)|(16)|(32)|(64))?				{return INT;}
-"float"((32)|(64))						{return FLOAT;}
-"rune"									{return RUNE;}
 
 
 "true"|"false"							{return BOOL;}
@@ -82,8 +84,6 @@
 "&^"									{return AMP_EXP;}
 "..."									{return POINT;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
-
-[a-zA-z]*((\.[a-zA-z]+))+				{return METHOD;}
 [\']([\\](([\\][0-7]{3})|([\\x][0-9A-Fa-f]{2})|([\\u][0-9A-Fa-f]{4})|([\\U][0-9A-Fa-f]{8})|([abfnrtv\'"])|([0-9A-Fa-f])+))	{return RUNE_LIT;}
 [-]?0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
 [-]?0[bB]?[_]?([0-9]+[_]?)+					{return CONST_BIN_ERR;}

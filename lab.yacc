@@ -21,7 +21,7 @@
 %token CONST_INT_ERR CONST_BIN_ERR
 %token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
 
-%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT
+%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
 
 %left '+' '-'
 %left '*' '/'
@@ -243,6 +243,7 @@ cond_args: //methods
 
 // SWITCH CASE 
 
+
 //switch_case: SWITCH switch_arg '{' cases default_case '}'
 //
 //switch_arg: switch_arg_list
@@ -316,11 +317,25 @@ actions: variables
 		| for_loop
 		//| var_block
 		//| switch_case
+		| return_stmt
 ;
+
+return_stmt: RETURN
+			| RETURN values_list
+		
+values_list: values_list ',' value
+			| value		 
+
+value: data
+	| id
+	| function_call
 
 function_call: id '(' method_arguments ')'
              |id mass_index '(' method_arguments ')'
 ;
+
+labeled_stmt: id ':' statement
+
 
 operator: '+'
 		| '-'
@@ -362,6 +377,9 @@ data: CONST_BIN
 		//| methods
 ;
 
+
+
+	
 /* FLOAT LITERALS */
 float_lit: DECIMAL_FLOAT_LIT 
 		| HEX_FLOAT_LIT
