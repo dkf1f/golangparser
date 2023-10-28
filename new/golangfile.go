@@ -1,18 +1,20 @@
-package main
-import "fmt"
 
-func update(a *int, t *string) {
-	*a = *a + 5      // defrencing pointer address
-	*t = *t + " Doe" // defrencing pointer address
-	return
-}
+
+package main
+
+import (
+	"fmt"
+	"reflect"
+)
 
 func main() {
-	var age = 20
-	var text = "John"
-	fmt.Println("Before:", text, age)
-
-	update(&age, &text)
-
-	fmt.Println("After :", text, age)
+	variadicExample(1, "red", true, 10.5, []string{"foo", "bar", "baz"},
+		map[string]int{"apple": 23, "tomato": 13})
 }
+
+func variadicExample(i ...interface{}) {
+	for _, v := range i {
+		fmt.Println(v, "--", reflect.ValueOf(v).Kind())
+	}
+}
+

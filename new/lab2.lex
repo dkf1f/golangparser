@@ -65,6 +65,7 @@
 ";"										{return SEMICOLON;}
 "^"										{return XOR;}
 ":="									{return PEQ;}
+"=="									{return EQUAL;}
 "="										{return EQ;}
 "&&"									{return AND;}
 "||"									{return OR;}
@@ -72,7 +73,6 @@
 ">>"									{return RSHIFT;}
 "++"									{return INC;}
 "--"									{return DEC;}
-"=="									{return EQUAL;}
 "!="									{return NOTEQUAL;}
 ">="									{return GREATEROREQUAL;}
 "<="									{return LESSOREQUAL;}

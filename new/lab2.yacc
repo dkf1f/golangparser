@@ -35,14 +35,13 @@ TopLevelDecl: Declaration
 		| FunctionDecl 
 		| MethodDecl
 		
-FunctionDecl: FUNCTION FunctionName TypeParameters Signature FunctionBody
-			| FUNCTION FunctionName Signature FunctionBody
+FunctionDecl: FUNCTION FunctionName TypeParameters Signature Block
+			| FUNCTION FunctionName Signature Block
 			| FUNCTION FunctionName Signature 
 			| FUNCTION FunctionName TypeParameters Signature 
 FunctionName: id
-FunctionBody: Block
 
-MethodDecl: FUNCTION Receiver MethodName Signature FunctionBody
+MethodDecl: FUNCTION Receiver MethodName Signature Block
 Receiver: Parameters
 
 Statement: Declaration 
@@ -62,15 +61,28 @@ Statement: Declaration
 	| DeferStmt 
 ;
 
+// ForStmt = "for" [ Condition | ForClause | RangeClause ] Block
+
 ForStmt: FOR Condition Block
 		| FOR ForClause Block
 		| FOR RangeClause Block
+		| FOR Block
 
 Condition: Expression
-		| /*empty*/
+InitStmt: SimpleStmt
+PostStmt: SimpleStmt
 
-ForClause: SimpleStmt SEMICOLON Condition SEMICOLON SimpleStmt
+//ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
+ForClause: InitStmt SEMICOLON Condition SEMICOLON PostStmt
+		| InitStmt SEMICOLON SEMICOLON 
+		| InitStmt SEMICOLON Condition SEMICOLON 
+		| InitStmt SEMICOLON SEMICOLON PostStmt 
+		| SEMICOLON Condition SEMICOLON
+		| SEMICOLON Condition SEMICOLON PostStmt
+		| SEMICOLON SEMICOLON PostStmt
 
+
+// RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
 RangeClause: ExpressionList EQ RANGE Expression
 			| IdentifierList PEQ RANGE Expression
 			| RANGE Expression
@@ -112,32 +124,36 @@ RecvStmt: ExpressionList EQ RecvExpr
 		| RecvExpr
 		
 RecvExpr: Expression
-// [SimpleStmt] !!!
-IfStmt: IF SimpleStmt SEMICOLON Expression Block ElseStmt
-	| IF Expression Block ElseStmt
 
-ElseStmt: ELSE IfStmt
-		| ELSE Block
-		| /*empty*/
+//IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
+IfStmt: IF SimpleStmt SEMICOLON Expression Block ELSE IfStmt
+	| IF SimpleStmt SEMICOLON Expression Block ELSE Block
+	| IF SimpleStmt SEMICOLON Expression Block
+	| IF Expression Block ELSE IfStmt
+	| IF Expression Block ELSE Block
+	| IF Expression Block
+	
 
 
 /* ! SWITCH STATEMENT ! */
 SwitchStmt: ExprSwitchStmt 
 		| TypeSwitchStmt
-		
+	
+// ExprSwitchStmt = "switch" [ SimpleStmt ";" ] [ Expression ] "{" { ExprCaseClause } "}" .
 ExprSwitchStmt: SWITCH SimpleStmt SEMICOLON Expression '{' ExprCaseClauseList '}'
-			| SWITCH SimpleStmt SEMICOLON '{' ExprCaseClauseList '}'
+			| SWITCH SimpleStmt SEMICOLON '{' ExprCaseClauseList '}' {printf("simplestmt\n");}
 			| SWITCH Expression '{' ExprCaseClauseList '}'
 			| SWITCH '{' ExprCaseClauseList '}'
 
 ExprCaseClauseList: ExprCaseClause ExprCaseClauseList
 				| ExprCaseClause
+				
 ExprCaseClause: ExprSwitchCase ':' Statements
 ExprSwitchCase: CASE ExpressionList | DEFAULT
 
-TypeSwitchStmt: SWITCH TypeSwitchCondition TypeSwitchGuard '{'TypeCaseClauseList'}'
-TypeSwitchCondition: /**/
-				| SimpleStmt SEMICOLON
+TypeSwitchStmt: SWITCH SimpleStmt SEMICOLON TypeSwitchGuard '{'TypeCaseClauseList'}'
+			|  SWITCH TypeSwitchGuard '{'TypeCaseClauseList'}'
+
 TypeSwitchGuard: id PEQ PrimaryExpr '.' '(' TYPE ')' 
 				| PrimaryExpr '.' '(' TYPE ')' 
 TypeCaseClauseList: TypeCaseClause TypeCaseClauseList
@@ -193,12 +209,17 @@ VarSpec: IdentifierList Type
 		| IdentifierList EQ ExpressionList
 
 SimpleStmt: EmptyStatement
-		| ExpressionStmt 
+		| ShortVarDecl
+		| Expression 
 		| SendStmt 
 		| IncDecStmt 
 		| Assignment 
-		| ShortVarDecl
 ;
+
+// костыль -> не распознает IdentifierList 
+ShortVarDecl: IdentifierList PEQ ExpressionList
+			//| id PEQ ExpressionList
+
 EmptyStatement: /*empty*/
 
 SendStmt: Channel POINTER Expression
@@ -207,22 +228,27 @@ Channel: Expression
 IncDecStmt: Expression INC 
 		| Expression DEC
 		
-Assignment: ExpressionList assign_op ExpressionList
-		| Expression assign_op ExpressionList
+Assignment: ExpressionList EQ ExpressionList
+		| ExpressionList add_op EQ ExpressionList
+		| ExpressionList mul_op EQ ExpressionList
+		//| IdentifierList EQ ExpressionList
+		
+		
 
-assign_op: EQ
-		| add_op EQ
-		| mul_op EQ
-
-ShortVarDecl: IdentifierList PEQ ExpressionList
-
-ExpressionStmt: Expression
 
 Expression: UnaryExpr 
 		| Expression binary_op Expression
+
 		
 UnaryExpr: PrimaryExpr 
-		| unary_op UnaryExpr
+		| '+' UnaryExpr
+		| '-' UnaryExpr
+		| '!' UnaryExpr
+		| XOR UnaryExpr
+		| '*' UnaryExpr
+		| '&' UnaryExpr
+		| POINTER UnaryExpr
+		
 
 PrimaryExpr: Operand
 	| MethodExpr
@@ -246,7 +272,7 @@ Operand: OperandName
 		| '(' Expression ')'
 
 Literal: BasicLit 
-	//| CompositeLit 
+	  | CompositeLit 
 	  | FunctionLit
 BasicLit: int_lit 
 		| float_lit 
@@ -255,7 +281,36 @@ BasicLit: int_lit
 		| CONST_STRING
 		| BOOL
 
+
+
+CompositeLit: LiteralType LiteralValue
+LiteralType: StructType 
+		| ArrayType 
+		| '[' POINT ']' ElementType 
+		| SliceType 
+		| MapType 
+		| TypeName
+		| TypeName TypeArgs
+
+LiteralValue: '{' ElementList ',' '}'
+			| '{' ElementList '}'
+			| '{' '}'
 		
+ElementList: ElementList ',' KeyedElement
+			| KeyedElement
+
+KeyedElement: Key ':' Element
+			| Element
+			
+Key: FieldName 
+	| Expression 
+	| LiteralValue
+
+FieldName: id	
+
+Element: Expression 
+		| LiteralValue		
+			
 OperandName: id
 		| QualifiedIdent
 		
@@ -272,9 +327,7 @@ float_lit: DECIMAL_FLOAT_LIT
 		| HEX_FLOAT_LIT
 ;
 
-FunctionLit: FUNCTION Signature FunctionBody
-
-FunctionBody: Block
+FunctionLit: FUNCTION Signature Block
 
 Block: '{' Statements '}'
 			
@@ -297,20 +350,25 @@ Slice: '[' Expression ':' Expression ']'
 
 TypeAssertion: '.' '(' Type ')'
 
+// Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
 Arguments: '(' ExpressionList ')'
+		| '(' ExpressionList ',' ')'
+		| '(' ExpressionList POINT ')'
+		| '(' Type ','')'
+		| '(' Type POINT ')'
 		| '(' Type ')'
 		| '(' Type ',' ExpressionList ')'
 		| '(' ')'
 		
-ExpressionList: Expression
-			| ExpressionList ',' Expression
+ExpressionList: Expression ',' ExpressionList
+			| Expression 
 		
-Type: TypeName TypeArgs 
+Type: TypeName
+	| TypeName TypeArgs 
 	| TypeLit 
 	| '(' Type ')'
 
-TypeArgs: /*empty*/
-		| '[' TypeList ']'
+TypeArgs: '[' TypeList ']'
 		| '[' TypeList ',' ']'
 		
 TypeList: Type ',' TypeList
@@ -345,6 +403,8 @@ Tag:
 	| CONST_STRING
 EmbeddedField: '*' TypeName TypeArgs
 			 | TypeName TypeArgs
+			 | '*' TypeName
+			 | TypeName
 
 /*POINTER TYPE*/
 PointerType: '*' Type	 
@@ -372,8 +432,8 @@ ParameterDecl: IdentifierList POINT Type
 			| id Type
 			
 			
-IdentifierList: id ',' IdentifierList
-			| id
+IdentifierList: id 
+			| id ',' IdentifierList
 			
 /*INTERFACE TYPE*/
 InterfaceType: INTERFACE '{' InterfaceElemList '}'
@@ -408,15 +468,12 @@ ChanValues:  CHAN
 		| CHAN POINTER
 		| POINTER CHAN
 
-unary_op: '+'
-		| '-'
-		| '!'
-		| XOR
-		| '*'
-		| '&'
-		| POINTER
 	
-binary_op: OR | AND | rel_op | add_op | mul_op
+binary_op: OR 
+	| AND 
+	| rel_op 
+	| add_op 
+	| mul_op
 
 mul_op: '*'
 	| '/'

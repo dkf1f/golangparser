@@ -386,16 +386,16 @@ static const flex_int16_t yy_accept[308] =
     {   0,
         0,    0,   66,   65,   63,   64,   65,   60,   65,   60,
        60,   65,   60,   60,   60,   60,   56,   56,   60,   32,
-       60,   35,   60,   59,   33,   59,   59,   59,   59,   59,
+       60,   36,   60,   59,   33,   59,   59,   59,   59,   59,
        59,   59,   59,   59,   59,   59,   59,   59,   60,   63,
-       62,   43,    0,   48,    0,   36,   46,    0,    0,    0,
-       40,   41,   56,   56,    0,    0,   57,    0,    0,   57,
+       62,   43,    0,   48,    0,   37,   46,    0,    0,    0,
+       41,   42,   56,   56,    0,    0,   57,    0,    0,   57,
        51,   52,   52,   54,   54,   54,    0,    0,   56,   49,
-       56,    0,   56,   34,   31,   38,   45,   42,   44,   39,
+       56,    0,   56,   34,   31,   39,   45,   35,   44,   40,
        59,   59,   59,   59,   59,   59,   59,   59,   59,   59,
        17,   19,   59,   59,   59,   59,   59,   59,   59,   59,
 
-       59,   59,   59,   59,   59,   37,    0,   48,    0,   61,
+       59,   59,   59,   59,   59,   38,    0,   48,    0,   61,
         1,   50,   50,   50,    0,    0,    0,    0,   47,   57,
         0,   57,    0,    0,    0,    0,    2,    0,    0,   57,
         0,   51,   52,   52,   54,   51,   52,   54,    0,   54,
@@ -1280,42 +1280,42 @@ YY_RULE_SETUP
 case 35:
 YY_RULE_SETUP
 #line 68 "lab2.lex"
-{return EQ;}
+{return EQUAL;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 69 "lab2.lex"
-{return AND;}
+{return EQ;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 70 "lab2.lex"
-{return OR;}
+{return AND;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 71 "lab2.lex"
-{return LSHIFT;}
+{return OR;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 72 "lab2.lex"
-{return RSHIFT;}
+{return LSHIFT;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 73 "lab2.lex"
-{return INC;}
+{return RSHIFT;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 74 "lab2.lex"
-{return DEC;}
+{return INC;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 75 "lab2.lex"
-{return EQUAL;}
+{return DEC;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
