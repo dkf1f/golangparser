@@ -4,7 +4,6 @@ import "fmt"
 
 func update(a *int, t *string) {
 	// считывает как *a = *a + 5*t = *t + " Doe" поэтому не робит
-	// наверное можно как то приоритеты добавить хз не умею
 	*a = *a + 5      // defrencing pointer address
 	*t = *t + " Doe" // defrencing pointer address
 	return
@@ -44,20 +43,6 @@ import (
 
 func main() {
 	function(n-1)
-}
-
-
-package main
- 
-import (
-	"fmt"
-	"time"
-)
- 
-func main() {
- 
-	a, p, d = 1, 2
-	
 }
 
 

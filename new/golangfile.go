@@ -1,13 +1,11 @@
-
 package main
- 
+
 import (
-	"fmt"
-	"time"
+    "fmt"
+    "unicode/utf8"
 )
- 
+
 func main() {
- 
-	a, p, d = 1, 2
-	
+	x:= (n-1)
 }
+

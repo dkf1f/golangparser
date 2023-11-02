@@ -23,6 +23,7 @@
 %token ADDEQ DECEQ OREQ XOREQ MULEQ DIVEQ MODEQ LSHIFTEQ RSHIFTEQ ANDEQ ANDXOREQ
 %token EQ INC DEC EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
 
+
 %%
 prog: PACKAGE IMPORTS {printf("Find package and import\n");} 
 	| prog TopLevelDecl
@@ -203,15 +204,13 @@ VarSpec: IdentifierList Type
 		| IdentifierList Type EQ ExpressionList
 		| IdentifierList EQ ExpressionList
 
-SimpleStmt: ShortVarDecl
-		| Assignment  
+SimpleStmt: Assignment  
 		| Expression 
 		| SendStmt 
 		| IncDecStmt 
 		| EmptyStatement
 ;
 
-ShortVarDecl: IdentifierList PEQ ExpressionList
 
 EmptyStatement: /*empty*/
 
@@ -220,8 +219,10 @@ Channel: Expression
 
 IncDecStmt: Expression INC 
 		| Expression DEC
-		
-Assignment: ExpressionList EQ ExpressionList
+
+Assignment: IdentifierList PEQ ExpressionList
+		| IdentifierList EQ ExpressionList
+		| ExpressionList EQ ExpressionList
 		| ExpressionList ADDEQ ExpressionList
 		| ExpressionList DIVEQ ExpressionList
 		| ExpressionList DECEQ ExpressionList
@@ -234,11 +235,8 @@ Assignment: ExpressionList EQ ExpressionList
 		| ExpressionList ANDEQ ExpressionList
 		| ExpressionList OREQ ExpressionList
 		
-		
-		
 Expression: UnaryExpr 
 		| Expression binary_op Expression 
-
 
 binary_op: OR 
 	| AND 
