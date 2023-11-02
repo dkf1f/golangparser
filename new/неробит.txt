@@ -1,57 +1,4 @@
 package main
- 
-import (
-	"fmt"
-	"time"
-)
- 
-func main() {
-	// работает с костылем 
-	// today должен распознаваться в токен IdentifierList 
-	// но этого не происходит
-	switch today := time; {
-	case today.Day() < 5:
-		fmt.Println("Clean your house.")
-	case today.Day() <= 10:
-		fmt.Println("Buy some wine.")
-	case today.Day() > 15:
-		fmt.Println("Visit a doctor.")
-	case today.Day() == 25:
-		fmt.Println("Buy some food.")
-	default:
-		fmt.Println("No information available for that day.")
-	}
-}
-
-
-
-package main
- 
-import "fmt"
- 
-func main() {
- 
-	// Example 1
-	strDict := map[string]string{"Japan": "Tokyo", "China": "Beijing", "Canada": "Ottawa"}
-	for index, element := range strDict {
-		fmt.Println("Index :", index, " Element :", element)
-	}
- 
-	// Example 2
-	for key := range strDict {
-		fmt.Println(key)
-	}
- 
-	// Example 3
-	for _, value := range strDict {
-		fmt.Println(value)
-	}
-}
-
-==== ВЫШЕ ДВА ВЗАИМОИСКЛЮЧАЮЩИХ ПРИМЕРА ХЗ ЧЕ ДЕЛАТЬ ==== 
-==== ЕСЛИ ДОБАВИТЬ КОСТЫЛЬНОЕ ПРАВИЛО ДЛЯ ПЕРВОГО, ПЕРЕСТАЕТ РАБОТАТЬ ВТОРОЕ ==== 
-
-package main
 
 import "fmt"
 
@@ -85,6 +32,32 @@ func main() {
 			return (f - 32.0) * (5.0 / 9.0)
 		}(100),
 	)
+}
+
+
+package main
+
+import (
+    "fmt"
+    "unicode/utf8"
+)
+
+func main() {
+	function(n-1)
+}
+
+
+package main
+ 
+import (
+	"fmt"
+	"time"
+)
+ 
+func main() {
+ 
+	a, p, d = 1, 2
+	
 }
 
 

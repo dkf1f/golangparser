@@ -20,8 +20,12 @@
 %token CONST_INT CONST_CHAR CONST_STRING BOOL IOTA CONST_OCTAL CONST_HEX CONST_BIN  FLOAT_HEX DECIMAL_FLOAT_LIT HEX_FLOAT_LIT RUNE_LIT IMAGINARY_LIT
 %token CONST_INT_ERR CONST_BIN_ERR
 %token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
-%token ADDEQ DECEQ OREQ XOREQ MULEQ DIVEQ MODEQ LSHIFTEQ RSHIFTEQ ANDEQ ANDXOREQ
-%token EQ INC DEC EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
+
+%token EQ INC DEC SUBEQ PLUSEQ MULEQ DIVEQ MODEQ EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
+
+%left '+' '-'
+%left '*' '/'
+%right id
 
 %%
 prog: PACKAGE IMPORTS {printf("Find package and import\n");} 
@@ -134,7 +138,7 @@ IfStmt: IF SimpleStmt SEMICOLON Expression Block ELSE IfStmt
 
 /* ! SWITCH STATEMENT ! */
 SwitchStmt: ExprSwitchStmt 
-		//| TypeSwitchStmt
+		| TypeSwitchStmt
 	
 // ExprSwitchStmt = "switch" [ SimpleStmt ";" ] [ Expression ] "{" { ExprCaseClause } "}" .
 ExprSwitchStmt: SWITCH SimpleStmt SEMICOLON Expression '{' ExprCaseClauseList '}'
@@ -148,10 +152,10 @@ ExprCaseClauseList: ExprCaseClause ExprCaseClauseList
 ExprCaseClause: ExprSwitchCase ':' Statements
 ExprSwitchCase: CASE ExpressionList | DEFAULT
 
-TypeSwitchStmt: SWITCH TypeSwitchGuard '{'TypeCaseClauseList'}'
-			| SWITCH SimpleStmt SEMICOLON TypeSwitchGuard '{'TypeCaseClauseList'}'
+TypeSwitchStmt: SWITCH SimpleStmt SEMICOLON TypeSwitchGuard '{'TypeCaseClauseList'}'
+			|  SWITCH TypeSwitchGuard '{'TypeCaseClauseList'}'
 
-TypeSwitchGuard: id PEQ PrimaryExpr '.' '(' TYPE ')'
+TypeSwitchGuard: id PEQ PrimaryExpr '.' '(' TYPE ')' 
 				| PrimaryExpr '.' '(' TYPE ')' 
 TypeCaseClauseList: TypeCaseClause TypeCaseClauseList
 				| TypeCaseClause
@@ -162,20 +166,19 @@ TypeSwitchCase: CASE TypeList | DEFAULT
 
 /* CONST DECL */
 ConstDecl: CONST ConstSpec
-		| CONST '(' ConstSpecList')'
-		| CONST '(' ')'
+		| CONST '(' ConstSpecList ')'
 
 ConstSpecList: ConstSpec ConstSpecList
 			| ConstSpec
-ConstSpec: IdentifierList ConstExpr
+ConstSpec: IdentifierList Type EQ ExpressionList
 		| IdentifierList
-ConstExpr: Type EQ ExpressionList
-		| EQ ExpressionList
+		| IdentifierList EQ ExpressionList
 
 /* TYPE DECL */
-TypeDecl: TYPE TypeSpec 
-		| TYPE '(' TypeSpecList ')'
-		| TYPE '(' ')'
+TypeDecl: TYPE TypeStmt 
+TypeStmt: TypeSpec 
+		| '(' TypeSpecList ')'
+		| '(' ')'
 		
 TypeSpecList: TypeSpec TypeSpecList
 			| TypeSpec
@@ -193,27 +196,27 @@ TypeParamDecl: IdentifierList TypeConstraint
 TypeConstraint: TypeElem
 
 /*VAR DECL*/
-VarDecl: VAR VarSpec 
-		| VAR '(' VarSpecList ')'
-		| VAR '(' ')'
-		
+VarDecl: VAR VarStmt
+VarStmt: VarSpec 
+		| '(' VarSpecList ')'
+		| '(' ')'
 VarSpecList: VarSpec VarSpecList
-		| VarSpec
+			| VarSpec
 VarSpec: IdentifierList Type 
 		| IdentifierList Type EQ ExpressionList
 		| IdentifierList EQ ExpressionList
 
 SimpleStmt: ShortVarDecl
-		| Assignment  
 		| Expression 
 		| SendStmt 
 		| IncDecStmt 
-		| EmptyStatement
+		| Assignment 
+		//| /*empty stmt*/ 
 ;
 
+// костыль -> не распознает IdentifierList 
 ShortVarDecl: IdentifierList PEQ ExpressionList
-
-EmptyStatement: /*empty*/
+			//| id PEQ ExpressionList
 
 SendStmt: Channel POINTER Expression
 Channel: Expression
@@ -222,50 +225,16 @@ IncDecStmt: Expression INC
 		| Expression DEC
 		
 Assignment: ExpressionList EQ ExpressionList
-		| ExpressionList ADDEQ ExpressionList
-		| ExpressionList DIVEQ ExpressionList
-		| ExpressionList DECEQ ExpressionList
-		| ExpressionList MULEQ ExpressionList
-		| ExpressionList MODEQ ExpressionList
-		| ExpressionList LSHIFTEQ ExpressionList
-		| ExpressionList RSHIFTEQ ExpressionList
-		| ExpressionList XOREQ ExpressionList
-		| ExpressionList ANDXOREQ ExpressionList
-		| ExpressionList ANDEQ ExpressionList
-		| ExpressionList OREQ ExpressionList
+		| ExpressionList add_op EQ ExpressionList
+		| ExpressionList mul_op EQ ExpressionList
+		//| IdentifierList EQ ExpressionList
 		
 		
-		
+
+
 Expression: UnaryExpr 
-		| Expression binary_op Expression 
+		| Expression binary_op Expression
 
-
-binary_op: OR 
-	| AND 
-	| rel_op 
-	| add_op 
-	| mul_op
-
-mul_op: '*'
-	| '/'
-	| '%'
-	| LSHIFT
-	| RSHIFT
-	| '&'
-	| AMP_EXP
-
-add_op: XOR
-	| '|'
-	| '+'
-	| '-'
-
-rel_op: EQUAL
-	| NOTEQUAL
-	| '<'
-	| '>'
-	| LESSOREQUAL
-	| GREATEROREQUAL
-	
 		
 UnaryExpr: PrimaryExpr 
 		| '+' UnaryExpr
@@ -278,13 +247,13 @@ UnaryExpr: PrimaryExpr
 		
 
 PrimaryExpr: Operand
-	| PrimaryExpr Arguments 
 	| MethodExpr
 	| Conversion
 	| PrimaryExpr Selector 
 	| PrimaryExpr Index 
 	| PrimaryExpr Slice 
 	| PrimaryExpr TypeAssertion 
+	| PrimaryExpr Arguments 
 
 Conversion: Type '(' ExpressionList ')'
 		| Type '(' ')'
@@ -294,21 +263,23 @@ ReceiverType: Type
 MethodName: id
 
 Operand: OperandName
+		| OperandName TypeArgs
 		| Literal
-		//| OperandName TypeArgs
 		| '(' Expression ')'
 
 Literal: BasicLit 
 	  | CompositeLit 
 	  | FunctionLit
 	  
+	  
 BasicLit: int_lit 
 		| float_lit 
 		| imaginary_lit 
 		| RUNE_LIT 
-		| CONST_CHAR
 		| CONST_STRING
 		| BOOL
+
+
 
 CompositeLit: LiteralType LiteralValue
 LiteralType: StructType 
@@ -339,8 +310,10 @@ Element: Expression
 		| LiteralValue		
 			
 OperandName: id
-		| id '.' OperandName
+		| QualifiedIdent
 		
+QualifiedIdent: id '.' id
+
 int_lit: CONST_BIN
 		| CONST_HEX
 		| CONST_OCTAL
@@ -355,9 +328,10 @@ float_lit: DECIMAL_FLOAT_LIT
 FunctionLit: FUNCTION Signature Block
 
 Block: '{' Statements '}'
+		| '{' '}'
 			
-Statements: Statements Statement  
-		| Statement
+Statements: Statement SEMICOLON
+		| Statement Statements
 
 
 Selector: '.' id
@@ -385,12 +359,12 @@ Arguments: '(' ExpressionList ')'
 		| '(' Type ',' ExpressionList ')'
 		| '(' ')'
 		
-ExpressionList: Expression ',' ExpressionList
-			| Expression 
+ExpressionList: Expression
+			| Expression ',' ExpressionList
 		
-Type: TypeLit 
-	| TypeName
+Type: TypeName
 	| TypeName TypeArgs 
+	| TypeLit 
 	| '(' Type ')'
 
 TypeArgs: '[' TypeList ']'
@@ -400,11 +374,11 @@ TypeList: Type ',' TypeList
 		| Type
 
 TypeName: id 
-		| id '.' TypeName
+		| id '.' id
 
 TypeLit: ArrayType 
-	| PointerType 
 	| StructType 
+	| PointerType 
 	| FunctionType 
 	| InterfaceType 
 	| SliceType 
@@ -417,16 +391,13 @@ ArrayLength: Expression
 ElementType: Type
 
 /*STRUCT TYPE*/
-StructType: STRUCT '{' DeclList '}'
+StructType: STRUCT '{' FieldDeclList '}'
 		| STRUCT '{' '}'
-
-DeclList: FieldDecl DeclList 
-		| FieldDecl 
-	
+		
+FieldDeclList: FieldDecl FieldDeclList
+		| FieldDecl
 FieldDecl: IdentifierList Type Tag
-		| IdentifierList Type
 		| EmbeddedField Tag 
-		| EmbeddedField
 Tag: CONST_STRING
 
 EmbeddedField: '*' TypeName TypeArgs
@@ -438,16 +409,16 @@ EmbeddedField: '*' TypeName TypeArgs
 PointerType: '*' Type	 
 			 
 /*FUNCTION TYPE*/
-
 FunctionType: FUNCTION Signature
-
-Signature: Parameters Parameters
-		| Parameters
-		| Parameters Type
+Signature: Parameters
+		| Parameters Result
+Result: Parameters 
+		| Type
 		
 Parameters: '(' ParameterList ')' 
-		| '(' ')'
 		|  '(' ParameterList ',' ')' 
+		| '(' ')'
+
 
 
 ParameterList: ParameterDecl ',' ParameterList
@@ -455,8 +426,8 @@ ParameterList: ParameterDecl ',' ParameterList
 			
 ParameterDecl: IdentifierList POINT Type
 			| IdentifierList Type
-			| IdentifierList // | Type
 			| POINT Type
+			| Type
 			
 			
 IdentifierList: id 
@@ -488,12 +459,40 @@ SliceType: '[' ']' ElementType
 MapType: MAP '[' Type ']' ElementType
 
 /*CHANNEL TYPE*/
-ChannelType: CHAN ElementType
-		| CHAN POINTER ElementType
-		| POINTER CHAN ElementType
-	
-	
+ChannelType: ChanMix ElementType
+ChanMix: ChanMix ChanValues
+		| ChanValues
+ChanValues: CHAN
+		| CHAN POINTER
+		| POINTER CHAN
 
+	
+binary_op: OR 
+	| AND 
+	| rel_op 
+	| add_op 
+	| mul_op
+
+mul_op: '*'
+	| '/'
+	| '%'
+	| LSHIFT
+	| RSHIFT
+	| '&'
+	| AMP_EXP
+
+add_op: XOR
+	| '|'
+	| '+'
+	| '-'
+
+rel_op: EQUAL
+	| NOTEQUAL
+	| '<'
+	| '>'
+	| LESSOREQUAL
+	| GREATEROREQUAL
+	
 
 %%
 

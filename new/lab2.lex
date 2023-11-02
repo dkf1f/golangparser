@@ -19,7 +19,7 @@
 "rune"									{return RUNE;}
 	
 	*/
-
+	
 %}
 
 %option yylineno
@@ -63,10 +63,27 @@
 
 "<-"									{return POINTER;}
 ";"										{return SEMICOLON;}
-"^"										{return XOR;}
+
+"+="									{return ADDEQ;}
+"-="									{return DECEQ;}
+"|="									{return OREQ;}
+"^="									{return XOREQ;}
+
+
+"*="									{return MULEQ;}
+"/="									{return DIVEQ;}
+"%="									{return MODEQ;}
+"<<="									{return LSHIFTEQ;}
+">>="									{return RSHIFTEQ;}
+"&="									{return ANDEQ;}
+"&^="									{return ANDXOREQ;}
+
 ":="									{return PEQ;}
 "=="									{return EQUAL;}
 "="										{return EQ;}
+
+"^"										{return XOR;}
+
 "&&"									{return AND;}
 "||"									{return OR;}
 "<<"									{return LSHIFT;}
@@ -79,6 +96,8 @@
 "&^"									{return AMP_EXP;}
 "..."									{return POINT;}
 \"(\\.|[^\"])*\"						{return CONST_STRING;}
+\'(\\.|[^\'])*\'						{return CONST_CHAR;}
+
 (([-]?0[bB]?[_]?([0-1]+[_]?)+)|([-]?0[oO]?[_]?([0-7]+[_]?)+)|([-]?0[xX]?[_]?([0-9A-Fa-f]+[_]?)+)|([-]?0[xX]((([_]?([0-9a-fA-F][_]?)+)\.([0-9a-fA-F][_]?)+)|([_]?([0-9a-fA-F][_]?)+)|(\.([0-9a-fA-F][_]?)+)))|([-]?([0-9]+[_]?[0-9]*)+)|((([-]?([0-9]+[_]?[0-9]*)+)(([.]([-]?([0-9]+[_]?[0-9]*)+)?([eE][+-]?([0-9]+[_]?[0-9]*)+)?)|([eE][+-]?([0-9]+[_]?[0-9]*)+)))|([.]([-]?([0-9]+[_]?[0-9]*)+)([eE][+-]?([0-9]+[_]?[0-9]*)+)?))|([-]?[0][xX]([_]?(([0-9A-Fa-f]+[_]?)+)([.]((([0-9A-Fa-f]+[_]?)+))?)?|([.](([0-9A-Fa-f]+[_]?)+)))([pP][+-]?([-]?([0-9]+[_]?[0-9]*)+))))"i"	  {return IMAGINARY_LIT;}
 [\']([\\](([\\][0-7]{3})|([\\x][0-9A-Fa-f]{2})|([\\u][0-9A-Fa-f]{4})|([\\U][0-9A-Fa-f]{8})|([abfnrtv\'"])|([0-9A-Fa-f])+))	{return RUNE_LIT;}
 [-]?0[bB]?[_]?([0-1]+[_]?)+					{return CONST_BIN;}
@@ -98,7 +117,6 @@
 
 
 ";"|","|"{"|"}"|"("|")"|"["|"]"|"*"|"+"|"-"|"/"|"?"|":"|"&"|"|"|"^"|"!"|"~"|"%"|"<"|">"|"."			{return yytext[0];}
-"'"."'"									{return CONST_CHAR;}
 (\r\n)                                  {yylval++;line_counter++;}
 [ \t]+                                  /* empty */
 [ \t\n]									;

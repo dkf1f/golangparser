@@ -110,28 +110,34 @@ extern int yydebug;
     ERRORTYPE = 311,               /* ERRORTYPE  */
     ANYTYPE = 312,                 /* ANYTYPE  */
     COMPARABLE = 313,              /* COMPARABLE  */
-    EQ = 314,                      /* EQ  */
-    INC = 315,                     /* INC  */
-    DEC = 316,                     /* DEC  */
-    SUBEQ = 317,                   /* SUBEQ  */
-    PLUSEQ = 318,                  /* PLUSEQ  */
-    MULEQ = 319,                   /* MULEQ  */
-    DIVEQ = 320,                   /* DIVEQ  */
-    MODEQ = 321,                   /* MODEQ  */
-    EQUAL = 322,                   /* EQUAL  */
-    NOTEQUAL = 323,                /* NOTEQUAL  */
-    GREATEROREQUAL = 324,          /* GREATEROREQUAL  */
-    LESSOREQUAL = 325,             /* LESSOREQUAL  */
-    AND = 326,                     /* AND  */
-    OR = 327,                      /* OR  */
-    LSHIFT = 328,                  /* LSHIFT  */
-    RSHIFT = 329,                  /* RSHIFT  */
-    PEQ = 330,                     /* PEQ  */
-    XOR = 331,                     /* XOR  */
-    SEMICOLON = 332,               /* SEMICOLON  */
-    AMP_EXP = 333,                 /* AMP_EXP  */
-    POINT = 334,                   /* POINT  */
-    POINTER = 335                  /* POINTER  */
+    ADDEQ = 314,                   /* ADDEQ  */
+    DECEQ = 315,                   /* DECEQ  */
+    OREQ = 316,                    /* OREQ  */
+    XOREQ = 317,                   /* XOREQ  */
+    MULEQ = 318,                   /* MULEQ  */
+    DIVEQ = 319,                   /* DIVEQ  */
+    MODEQ = 320,                   /* MODEQ  */
+    LSHIFTEQ = 321,                /* LSHIFTEQ  */
+    RSHIFTEQ = 322,                /* RSHIFTEQ  */
+    ANDEQ = 323,                   /* ANDEQ  */
+    ANDXOREQ = 324,                /* ANDXOREQ  */
+    EQ = 325,                      /* EQ  */
+    INC = 326,                     /* INC  */
+    DEC = 327,                     /* DEC  */
+    EQUAL = 328,                   /* EQUAL  */
+    NOTEQUAL = 329,                /* NOTEQUAL  */
+    GREATEROREQUAL = 330,          /* GREATEROREQUAL  */
+    LESSOREQUAL = 331,             /* LESSOREQUAL  */
+    AND = 332,                     /* AND  */
+    OR = 333,                      /* OR  */
+    LSHIFT = 334,                  /* LSHIFT  */
+    RSHIFT = 335,                  /* RSHIFT  */
+    PEQ = 336,                     /* PEQ  */
+    XOR = 337,                     /* XOR  */
+    SEMICOLON = 338,               /* SEMICOLON  */
+    AMP_EXP = 339,                 /* AMP_EXP  */
+    POINT = 340,                   /* POINT  */
+    POINTER = 341                  /* POINTER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -196,28 +202,34 @@ extern int yydebug;
 #define ERRORTYPE 311
 #define ANYTYPE 312
 #define COMPARABLE 313
-#define EQ 314
-#define INC 315
-#define DEC 316
-#define SUBEQ 317
-#define PLUSEQ 318
-#define MULEQ 319
-#define DIVEQ 320
-#define MODEQ 321
-#define EQUAL 322
-#define NOTEQUAL 323
-#define GREATEROREQUAL 324
-#define LESSOREQUAL 325
-#define AND 326
-#define OR 327
-#define LSHIFT 328
-#define RSHIFT 329
-#define PEQ 330
-#define XOR 331
-#define SEMICOLON 332
-#define AMP_EXP 333
-#define POINT 334
-#define POINTER 335
+#define ADDEQ 314
+#define DECEQ 315
+#define OREQ 316
+#define XOREQ 317
+#define MULEQ 318
+#define DIVEQ 319
+#define MODEQ 320
+#define LSHIFTEQ 321
+#define RSHIFTEQ 322
+#define ANDEQ 323
+#define ANDXOREQ 324
+#define EQ 325
+#define INC 326
+#define DEC 327
+#define EQUAL 328
+#define NOTEQUAL 329
+#define GREATEROREQUAL 330
+#define LESSOREQUAL 331
+#define AND 332
+#define OR 333
+#define LSHIFT 334
+#define RSHIFT 335
+#define PEQ 336
+#define XOR 337
+#define SEMICOLON 338
+#define AMP_EXP 339
+#define POINT 340
+#define POINTER 341
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
