@@ -1,11 +1,12 @@
 package main
 
-import (
-    "fmt"
-    "unicode/utf8"
-)
+import "fmt"
 
 func main() {
-	x:= (n-1)
+	fmt.Printf(
+		"100 (°F) = %.2f (°C)\n",
+		func(f float64) float64 {
+			return (f - 32.0) * (5.0 / 9.0)
+		}(100),
+	)
 }
-

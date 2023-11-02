@@ -33,11 +33,10 @@ TopLevelDecl: Declaration
 		| FunctionDecl 
 		| MethodDecl
 		
-FunctionDecl: FUNCTION FunctionName TypeParameters Signature Block
-			| FUNCTION FunctionName Signature Block
-			| FUNCTION FunctionName Signature 
-			| FUNCTION FunctionName TypeParameters Signature 
-FunctionName: id
+FunctionDecl: FUNCTION id TypeParameters Signature Block
+			| FUNCTION id Signature Block
+			| FUNCTION id Signature 
+			| FUNCTION id TypeParameters Signature 
 
 MethodDecl: FUNCTION Receiver MethodName Signature Block
 Receiver: Parameters
@@ -61,23 +60,19 @@ Statement: Declaration
 
 // ForStmt = "for" [ Condition | ForClause | RangeClause ] Block
 
-ForStmt: FOR Condition Block
+ForStmt: FOR Expression Block
 		| FOR ForClause Block
 		| FOR RangeClause Block
 		| FOR Block
 
-Condition: Expression
-InitStmt: SimpleStmt
-PostStmt: SimpleStmt
-
 //ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
-ForClause: InitStmt SEMICOLON Condition SEMICOLON PostStmt
-		| InitStmt SEMICOLON SEMICOLON 
-		| InitStmt SEMICOLON Condition SEMICOLON 
-		| InitStmt SEMICOLON SEMICOLON PostStmt 
-		| SEMICOLON Condition SEMICOLON
-		| SEMICOLON Condition SEMICOLON PostStmt
-		| SEMICOLON SEMICOLON PostStmt
+ForClause: SimpleStmt SEMICOLON Expression SEMICOLON SimpleStmt
+		| SimpleStmt SEMICOLON SEMICOLON 
+		| SimpleStmt SEMICOLON Expression SEMICOLON 
+		| SimpleStmt SEMICOLON SEMICOLON SimpleStmt 
+		| SEMICOLON Expression SEMICOLON
+		| SEMICOLON Expression SEMICOLON SimpleStmt
+		| SEMICOLON SEMICOLON SimpleStmt
 
 
 // RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
@@ -285,10 +280,10 @@ PrimaryExpr: Operand
 	| PrimaryExpr TypeAssertion 
 
 Conversion: Type '(' ExpressionList ')'
-		| Type '(' ')'
+		| Type '(' ExpressionList ',' ')'
+		
 
-MethodExpr: ReceiverType '.' MethodName
-ReceiverType: Type
+MethodExpr: Type '.' MethodName
 MethodName: id
 
 Operand: OperandName
@@ -311,7 +306,7 @@ BasicLit: int_lit
 CompositeLit: LiteralType LiteralValue
 LiteralType: StructType 
 		| ArrayType 
-		| '[' POINT ']' ElementType 
+		| '[' POINT ']' Type 
 		| SliceType 
 		| MapType 
 		| TypeName
@@ -327,11 +322,10 @@ ElementList: KeyedElement ',' ElementList
 KeyedElement: Key ':' Element
 			| Element
 			
-Key: FieldName 
+Key: id 
 	| Expression 
 	| LiteralValue
 
-FieldName: id	
 
 Element: Expression 
 		| LiteralValue		
@@ -386,10 +380,17 @@ Arguments: '(' ExpressionList ')'
 ExpressionList: Expression ',' ExpressionList
 			| Expression 
 		
-Type: TypeLit 
-	| TypeName
+Type: TypeName
 	| TypeName TypeArgs 
 	| '(' Type ')'
+	| ArrayType 
+	| PointerType 
+	| StructType 
+	| FunctionType 
+	| InterfaceType 
+	| SliceType 
+	| MapType 
+	| ChannelType
 
 TypeArgs: '[' TypeList ']'
 		| '[' TypeList ',' ']'
@@ -400,19 +401,9 @@ TypeList: Type ',' TypeList
 TypeName: id 
 		| id '.' TypeName
 
-TypeLit: ArrayType 
-	| PointerType 
-	| StructType 
-	| FunctionType 
-	| InterfaceType 
-	| SliceType 
-	| MapType 
-	| ChannelType
 
 /*ARRAY TYPE*/
-ArrayType: '[' ArrayLength ']' ElementType
-ArrayLength: Expression
-ElementType: Type
+ArrayType: '[' Expression ']' Type
 
 /*STRUCT TYPE*/
 StructType: STRUCT '{' DeclList '}'
@@ -421,11 +412,10 @@ StructType: STRUCT '{' DeclList '}'
 DeclList: FieldDecl DeclList 
 		| FieldDecl 
 	
-FieldDecl: IdentifierList Type Tag
+FieldDecl: IdentifierList Type CONST_STRING
 		| IdentifierList Type
-		| EmbeddedField Tag 
-		| EmbeddedField
-Tag: CONST_STRING
+		| EmbeddedField CONST_STRING 
+		| EmbeddedField 
 
 EmbeddedField: '*' TypeName TypeArgs
 			 | TypeName TypeArgs
@@ -467,32 +457,32 @@ InterfaceType: INTERFACE '{' InterfaceElemList '}'
 InterfaceElemList: InterfaceElem InterfaceElemList
 		| InterfaceElem
 ;
-InterfaceElem: MethodElem 
+InterfaceElem: id Signature 
 			| TypeElem
-;
-MethodElem: id Signature
 ;
 TypeElem: TypeTerm '|' TypeElem
 		| TypeTerm
-;		
-TypeTerm: Type 
+;
+
+// Type --> id		
+TypeTerm: id 
 		| '~' Type
 ;
 
 /*SLICE TYPE*/
-SliceType: '[' ']' ElementType
+SliceType: '[' ']' Type
 
 /*MAP TYPE*/
-MapType: MAP '[' Type ']' ElementType
+MapType: MAP '[' Type ']' Type
 
 /*CHANNEL TYPE*/
-ChannelType: CHAN ElementType
-		| CHAN POINTER ElementType
-		| POINTER CHAN ElementType
+
+// Type --> id
+ChannelType: CHAN Type
+		| CHAN POINTER id
+		| POINTER CHAN Type
 	
 	
-
-
 %%
 
 int main(int argc, char *argv[])
