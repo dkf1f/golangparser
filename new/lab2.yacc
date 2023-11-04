@@ -179,13 +179,19 @@ TypeSpec: AliasDecl | TypeDef
 
 AliasDecl: id EQ Type
 
-TypeDef: id Type
-		| id TypeParameters Type
+/// !!!!!!!!!!!!!
+
+TypeDef: id TypeParameters Type
 
 TypeParameters: '[' TypeParamList ']'
+			| '[' TypeParamList ','']'
+			|
+			
 TypeParamList: TypeParamDecl ',' TypeParamList
 			| TypeParamDecl
+			
 TypeParamDecl: IdentifierList TypeConstraint
+
 TypeConstraint: TypeElem
 
 /*VAR DECL*/
@@ -247,10 +253,10 @@ mul_op: '*'
 	| '&'
 	| AMP_EXP
 
-add_op: XOR
+add_op: '-'
+	|XOR
 	| '|'
 	| '+'
-	| '-'
 
 rel_op: EQUAL
 	| NOTEQUAL
@@ -289,7 +295,7 @@ MethodName: id
 Operand: OperandName
 		| Literal
 		//| OperandName TypeArgs
-		| '(' Expression ')'
+		| '(' ExpressionList ')'
 
 Literal: BasicLit 
 	  | CompositeLit 
@@ -304,19 +310,21 @@ BasicLit: int_lit
 		| BOOL
 
 CompositeLit: LiteralType LiteralValue
+		| LiteralValue
 LiteralType: StructType 
 		| ArrayType 
 		| '[' POINT ']' Type 
 		| SliceType 
 		| MapType 
-		| TypeName
-		| TypeName TypeArgs
+		//| TypeName
+		//| TypeName TypeArgs
+		| id
 
-LiteralValue: '{' ElementList ',' '}'
-			| '{' ElementList '}'
+LiteralValue: '{' ElementList '}'
+			| '{' ElementList ',' '}'
 			| '{' '}'
 		
-ElementList: KeyedElement ',' ElementList
+ElementList: ElementList ',' KeyedElement
 			| KeyedElement
 
 KeyedElement: Key ':' Element
@@ -328,7 +336,7 @@ Key: id
 
 
 Element: Expression 
-		| LiteralValue		
+	| LiteralValue	
 			
 OperandName: id
 		| id '.' OperandName
@@ -376,8 +384,9 @@ Arguments: '(' ExpressionList ')'
 		| '(' Type ')'
 		| '(' Type ',' ExpressionList ')'
 		| '(' ')'
-		
-ExpressionList: Expression ',' ExpressionList
+	
+// 	из-за ситуаций '(' ExpressionList ',' ')' вынуждено работать так  
+ExpressionList: ExpressionList ',' Expression
 			| Expression 
 		
 Type: TypeName
