@@ -1641,34 +1641,34 @@ YY_RULE_SETUP
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 116 "lab2.lex"
+#line 115 "lab2.lex"
 {return id;}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 119 "lab2.lex"
+#line 118 "lab2.lex"
 {return yytext[0];}
 	YY_BREAK
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 120 "lab2.lex"
+#line 119 "lab2.lex"
 {yylval++;line_counter++;}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 121 "lab2.lex"
+#line 120 "lab2.lex"
 /* empty */
 	YY_BREAK
 case 75:
 /* rule 75 can match eol */
 YY_RULE_SETUP
-#line 122 "lab2.lex"
+#line 121 "lab2.lex"
 ;
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 123 "lab2.lex"
+#line 122 "lab2.lex"
 ECHO;
 	YY_BREAK
 #line 1675 "lex.yy.c"
@@ -2688,6 +2688,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 123 "lab2.lex"
+#line 122 "lab2.lex"
 
 

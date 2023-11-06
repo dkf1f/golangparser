@@ -18,7 +18,7 @@
 %token DEFER
 
 %token CONST_INT CONST_CHAR CONST_STRING BOOL IOTA CONST_OCTAL CONST_HEX CONST_BIN  FLOAT_HEX DECIMAL_FLOAT_LIT HEX_FLOAT_LIT RUNE_LIT IMAGINARY_LIT
-%token CONST_INT_ERR CONST_BIN_ERR
+%token CONST_INT_ERR CONST_BIN_ERR 
 %token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
 %token ADDEQ DECEQ OREQ XOREQ MULEQ DIVEQ MODEQ LSHIFTEQ RSHIFTEQ ANDEQ ANDXOREQ
 %token EQ INC DEC EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
@@ -284,17 +284,13 @@ UnaryExpr: PrimaryExpr
 		
 
 PrimaryExpr: Operand
-	| Operand '(' ExpressionList ')'
-	| Operand '(' ExpressionList ',' ')'
-	| Operand '(' ExpressionList POINT ')'
-	| Operand '(' ')'
 	| PrimaryExpr '[' Expression ']'
 	| PrimaryExpr '[' Expression ',' ']' 
 	| PrimaryExpr '(' ExpressionList ')'
 	| PrimaryExpr '(' ExpressionList ',' ')'
 	| PrimaryExpr '(' ExpressionList POINT ')'
 	| PrimaryExpr '(' Type ','')'
-	| PrimaryExpr '(' Type POINT ')'
+	//| PrimaryExpr '(' Type POINT ')'
 	| PrimaryExpr '(' Type ')'
 	| PrimaryExpr '(' Type ',' ExpressionList ')'
 	| PrimaryExpr '(' ')' 
@@ -303,7 +299,7 @@ PrimaryExpr: Operand
 	//| PrimaryExpr Type '(' ExpressionList ',' ')'
 	| PrimaryExpr Selector 
 	| PrimaryExpr Slice 
-	| PrimaryExpr TypeAssertion 
+	| PrimaryExpr '.' '(' Type ')' 
 
 		
 Operand: id '.' id
@@ -311,7 +307,7 @@ Operand: id '.' id
 		| BasicLit
 		| CompositeLit
 		| FunctionLit
-		//| OperandName TypeArgs
+		//| id TypeArgs
 		| '(' ExpressionList ')'
 
 BasicLit: int_lit 
@@ -322,21 +318,23 @@ BasicLit: int_lit
 		| CONST_STRING
 		| BOOL
 
-CompositeLit: LiteralType LiteralValue
-		| LiteralValue
-		
-LiteralType: StructType 
-		| ArrayType 
-		| '[' POINT ']' Type 
-		| SliceType 
-		| MapType 
-		//| TypeName
+CompositeLit: LiteralValue
+		| StructType LiteralValue
+		| ArrayType LiteralValue
+		//| ArrayType
+		| '[' POINT ']' Type LiteralValue
+		| SliceType LiteralValue
+		//| SliceType
+		| MapType LiteralValue
+		//| TypeName LiteralValue
 		//| TypeName TypeArgs
-		| id
+		| id LiteralValue
+		
 
 LiteralValue: '{' ElementList '}'
 			| '{' ElementList ',' '}'
 			| '{' '}'
+			
 		
 ElementList: ElementList ',' KeyedElement
 			| KeyedElement
@@ -347,6 +345,7 @@ KeyedElement: Key ':' Element
 Key: id 
 	| Expression 
 	| LiteralValue
+
 
 
 Element: Expression 
@@ -383,7 +382,7 @@ Slice: '[' Expression ':' Expression ']'
 	| '['  ':' Expression ':' Expression ']'
 ;
 
-TypeAssertion: '.' '(' Type ')'
+
 
 // Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
 Arguments: '(' ExpressionList ')'
@@ -401,16 +400,16 @@ ExpressionList: ExpressionList ',' Expression
 		
 Type: id
 	| id '.' id
-	| id TypeArgs 
-	| id '.' id TypeArgs
+	//| id TypeArgs 
+	//| id '.' id TypeArgs
 	| '(' Type ')'
+	| MAP '[' Type ']' Type
 	| ArrayType 
-	| PointerType 
+	| '*' Type 
 	| StructType 
 	| FunctionType 
 	| InterfaceType 
 	| SliceType 
-	| MapType 
 	| ChannelType
 
 TypeArgs: '[' TypeList ']'

@@ -5,14 +5,13 @@ package main
 import "fmt"
 
 func main() {
-	var strSlice = []string{"India", "Canada", "Japan", "Germany", "Italy"}
-	fmt.Println(strSlice)
+	var theArray [3]string
+	theArray[0] = "India"  // Assign a value to the first element
+	theArray[1] = "Canada" // Assign a value to the second element
+	theArray[2] = "Japan"  // Assign a value to the third element
 
-	strSlice = RemoveIndex(strSlice, 3)
-	fmt.Println(strSlice)
-}
-
-func RemoveIndex(s []string, index int) []string {
-	return append(s[:index], s[index+1:]...)
+	fmt.Println(theArray[0]) // Access the first element value
+	fmt.Println(theArray[1]) // Access the second element valu
+	fmt.Println(theArray[2]) // Access the third element valu
 }
 
