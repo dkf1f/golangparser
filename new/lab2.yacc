@@ -22,7 +22,8 @@
 %token INT STRING COMPLEXTYPE BYTE FLOAT RUNE UINT BOOL_TYPE TYPE STRUCT UINTPTR ERRORTYPE ANYTYPE COMPARABLE
 %token ADDEQ DECEQ OREQ XOREQ MULEQ DIVEQ MODEQ LSHIFTEQ RSHIFTEQ ANDEQ ANDXOREQ
 %token EQ INC DEC EQUAL NOTEQUAL GREATEROREQUAL LESSOREQUAL AND OR LSHIFT RSHIFT PEQ XOR SEMICOLON AMP_EXP POINT POINTER
-
+%left '{'
+%left id
 
 %%
 prog: PACKAGE IMPORTS {printf("Find package and import\n");} 
@@ -38,7 +39,7 @@ FunctionDecl: FUNCTION id TypeParameters Signature Block
 			| FUNCTION id Signature 
 			| FUNCTION id TypeParameters Signature 
 
-MethodDecl: FUNCTION Receiver MethodName Signature Block
+MethodDecl: FUNCTION Receiver id Signature Block
 Receiver: Parameters
 
 Statement: Declaration 
@@ -66,14 +67,17 @@ ForStmt: FOR Expression Block
 		| FOR Block
 
 //ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
-ForClause: SimpleStmt SEMICOLON Expression SEMICOLON SimpleStmt
-		| SimpleStmt SEMICOLON SEMICOLON 
-		| SimpleStmt SEMICOLON Expression SEMICOLON 
-		| SimpleStmt SEMICOLON SEMICOLON SimpleStmt 
-		| SEMICOLON Expression SEMICOLON
-		| SEMICOLON Expression SEMICOLON SimpleStmt
-		| SEMICOLON SEMICOLON SimpleStmt
+ForClause: InitStmt SEMICOLON Condition SEMICOLON PostStmt
 
+
+InitStmt: SimpleStmt
+		| 
+		
+Condition: Expression
+		| 
+		
+PostStmt: SimpleStmt
+		| 
 
 // RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
 RangeClause: ExpressionList EQ RANGE Expression
@@ -91,6 +95,7 @@ GoStmt: GO Expression
 ReturnStmt: RETURN ExpressionList
 		| RETURN
 		
+				
 BreakStmt: BREAK Label
 		| BREAK
 		
@@ -112,19 +117,18 @@ CommCase: CASE SendStmt
 		| CASE RecvStmt 
 		| DEFAULT
 		
-RecvStmt: ExpressionList EQ RecvExpr
-		| IdentifierList PEQ RecvExpr
-		| RecvExpr
+RecvStmt: ExpressionList EQ Expression
+		| IdentifierList PEQ Expression
+		| Expression
 		
-RecvExpr: Expression
 
 //IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
 IfStmt: IF SimpleStmt SEMICOLON Expression Block ELSE IfStmt
 	| IF SimpleStmt SEMICOLON Expression Block ELSE Block
 	| IF SimpleStmt SEMICOLON Expression Block
+	| IF Expression Block
 	| IF Expression Block ELSE IfStmt
 	| IF Expression Block ELSE Block
-	| IF Expression Block
 	
 
 
@@ -165,6 +169,7 @@ ConstSpecList: ConstSpec ConstSpecList
 			| ConstSpec
 ConstSpec: IdentifierList ConstExpr
 		| IdentifierList
+		
 ConstExpr: Type EQ ExpressionList
 		| EQ ExpressionList
 
@@ -205,6 +210,7 @@ VarSpec: IdentifierList Type
 		| IdentifierList Type EQ ExpressionList
 		| IdentifierList EQ ExpressionList
 
+
 SimpleStmt: Assignment  
 		| Expression 
 		| SendStmt 
@@ -238,6 +244,7 @@ Assignment: IdentifierList PEQ ExpressionList
 		
 Expression: UnaryExpr 
 		| Expression binary_op Expression 
+		
 
 binary_op: OR 
 	| AND 
@@ -254,7 +261,7 @@ mul_op: '*'
 	| AMP_EXP
 
 add_op: '-'
-	|XOR
+	| XOR
 	| '|'
 	| '+'
 
@@ -277,30 +284,36 @@ UnaryExpr: PrimaryExpr
 		
 
 PrimaryExpr: Operand
-	| PrimaryExpr Arguments 
-	| MethodExpr
-	| Conversion
+	| Operand '(' ExpressionList ')'
+	| Operand '(' ExpressionList ',' ')'
+	| Operand '(' ExpressionList POINT ')'
+	| Operand '(' ')'
+	| PrimaryExpr '[' Expression ']'
+	| PrimaryExpr '[' Expression ',' ']' 
+	| PrimaryExpr '(' ExpressionList ')'
+	| PrimaryExpr '(' ExpressionList ',' ')'
+	| PrimaryExpr '(' ExpressionList POINT ')'
+	| PrimaryExpr '(' Type ','')'
+	| PrimaryExpr '(' Type POINT ')'
+	| PrimaryExpr '(' Type ')'
+	| PrimaryExpr '(' Type ',' ExpressionList ')'
+	| PrimaryExpr '(' ')' 
+	//| PrimaryExpr Type '.' id
+	//| PrimaryExpr Type '(' ExpressionList ')'
+	//| PrimaryExpr Type '(' ExpressionList ',' ')'
 	| PrimaryExpr Selector 
-	| PrimaryExpr Index 
 	| PrimaryExpr Slice 
 	| PrimaryExpr TypeAssertion 
 
-Conversion: Type '(' ExpressionList ')'
-		| Type '(' ExpressionList ',' ')'
 		
-
-MethodExpr: Type '.' MethodName
-MethodName: id
-
-Operand: OperandName
-		| Literal
+Operand: id '.' id
+		| id
+		| BasicLit
+		| CompositeLit
+		| FunctionLit
 		//| OperandName TypeArgs
 		| '(' ExpressionList ')'
 
-Literal: BasicLit 
-	  | CompositeLit 
-	  | FunctionLit
-	  
 BasicLit: int_lit 
 		| float_lit 
 		| imaginary_lit 
@@ -311,6 +324,7 @@ BasicLit: int_lit
 
 CompositeLit: LiteralType LiteralValue
 		| LiteralValue
+		
 LiteralType: StructType 
 		| ArrayType 
 		| '[' POINT ']' Type 
@@ -338,8 +352,6 @@ Key: id
 Element: Expression 
 	| LiteralValue	
 			
-OperandName: id
-		| id '.' OperandName
 		
 int_lit: CONST_BIN
 		| CONST_HEX
@@ -362,8 +374,6 @@ Statements: Statements Statement
 
 Selector: '.' id
 
-Index: '[' Expression ']'
-	| '[' Expression ',' ']'
 
 Slice: '[' Expression ':' Expression ']' 
 	| '[' ':' Expression ']' 
@@ -389,8 +399,10 @@ Arguments: '(' ExpressionList ')'
 ExpressionList: ExpressionList ',' Expression
 			| Expression 
 		
-Type: TypeName
-	| TypeName TypeArgs 
+Type: id
+	| id '.' id
+	| id TypeArgs 
+	| id '.' id TypeArgs
 	| '(' Type ')'
 	| ArrayType 
 	| PointerType 
@@ -407,12 +419,13 @@ TypeArgs: '[' TypeList ']'
 TypeList: Type ',' TypeList
 		| Type
 
-TypeName: id 
+TypeName: id
 		| id '.' TypeName
 
 
 /*ARRAY TYPE*/
 ArrayType: '[' Expression ']' Type
+		| '[' Expression ',' ']' Type
 
 /*STRUCT TYPE*/
 StructType: STRUCT '{' DeclList '}'
@@ -438,13 +451,15 @@ PointerType: '*' Type
 
 FunctionType: FUNCTION Signature
 
-Signature: Parameters Parameters
+Signature: Parameters  '(' ParameterList ')' 
+		| Parameters '(' ')'
+		| Parameters '(' ParameterList ',' ')'
+		| Parameters Type 
 		| Parameters
-		| Parameters Type
 		
 Parameters: '(' ParameterList ')' 
 		| '(' ')'
-		|  '(' ParameterList ',' ')' 
+		| '(' ParameterList ',' ')'
 
 
 ParameterList: ParameterDecl ',' ParameterList

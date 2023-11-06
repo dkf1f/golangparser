@@ -1,11 +1,18 @@
-// ХАХААХАХХВХХВХВХ ТОКА С МИНУСОМ НЕ РАБОТАЕТ ЕСЛИ ЧТО АЗАХАЗАХЗхъахъъхпхъпъхпъххЪПХЪХПЪХПХЪъ
+
+
 package main
 
-import (
-    "fmt"
-    "unicode/utf8"
-)
+import "fmt"
 
 func main() {
-	function(n-1)
+	var strSlice = []string{"India", "Canada", "Japan", "Germany", "Italy"}
+	fmt.Println(strSlice)
+
+	strSlice = RemoveIndex(strSlice, 3)
+	fmt.Println(strSlice)
 }
+
+func RemoveIndex(s []string, index int) []string {
+	return append(s[:index], s[index+1:]...)
+}
+

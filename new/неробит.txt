@@ -22,17 +22,23 @@ func main() {
 
 =====================================
 
-// ХАХААХАХХВХХВХВХ ТОКА С МИНУСОМ НЕ РАБОТАЕТ ЕСЛИ ЧТО АЗАХАЗАХЗхъахъъхпхъпъхпъххЪПХЪХПЪХПХЪъ
+
 package main
 
 import (
-    "fmt"
-    "unicode/utf8"
+	"fmt"
+	"reflect"
 )
 
 func main() {
-	function(n-1)
-}
+	// чет я не придумал нафиг как сделать 
+	var intSlice = make([]int, 10)        // when length and capacity is same
+	var strSlice = make([]string, 10, 20) // when length and capacity is different
 
-=====================================
+	fmt.Printf("intSlice \tLen: %v \tCap: %v\n", len(intSlice), cap(intSlice))
+	fmt.Println(reflect.ValueOf(intSlice).Kind())
+
+	fmt.Printf("strSlice \tLen: %v \tCap: %v\n", len(strSlice), cap(strSlice))
+	fmt.Println(reflect.ValueOf(strSlice).Kind())
+}
 
