@@ -63,12 +63,13 @@ Statement: Declaration
 
 ForStmt: FOR Expression Block
 		| FOR ForClause Block
-		| FOR RangeClause Block
+		| FOR ExpressionList EQ RANGE Expression Block
+		| FOR IdentifierList PEQ RANGE Expression Block
+		| FOR RANGE Expression Block
 		| FOR Block
 
 //ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
 ForClause: InitStmt SEMICOLON Condition SEMICOLON PostStmt
-
 
 InitStmt: SimpleStmt
 		| 
@@ -80,9 +81,6 @@ PostStmt: SimpleStmt
 		| 
 
 // RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
-RangeClause: ExpressionList EQ RANGE Expression
-			| IdentifierList PEQ RANGE Expression
-			| RANGE Expression
 			
 DeferStmt: DEFER Expression
 
@@ -133,14 +131,15 @@ IfStmt: IF SimpleStmt SEMICOLON Expression Block ELSE IfStmt
 
 
 /* ! SWITCH STATEMENT ! */
-SwitchStmt: ExprSwitchStmt 
-		//| TypeSwitchStmt
+SwitchStmt: SWITCH SimpleStmt SEMICOLON Expression '{' ExprCaseClauseList '}'
+			| SWITCH SimpleStmt SEMICOLON '{' ExprCaseClauseList '}'
+			| SWITCH Expression '{' ExprCaseClauseList '}'
+			| SWITCH '{' ExprCaseClauseList '}' 
+			//| SWITCH PrimaryExpr '.' '(' TYPE ')'  '{'TypeCaseClauseList'}'
+			//| SWITCH SimpleStmt SEMICOLON id PEQ PrimaryExpr '.' '(' TYPE ')' '{'TypeCaseClauseList'}'
+			//| SWITCH SimpleStmt SEMICOLON PrimaryExpr '.' '(' TYPE ')' '{'TypeCaseClauseList'}'
 	
 // ExprSwitchStmt = "switch" [ SimpleStmt ";" ] [ Expression ] "{" { ExprCaseClause } "}" .
-ExprSwitchStmt: SWITCH SimpleStmt SEMICOLON Expression '{' ExprCaseClauseList '}'
-			| SWITCH SimpleStmt SEMICOLON '{' ExprCaseClauseList '}' {printf("simplestmt\n");}
-			| SWITCH Expression '{' ExprCaseClauseList '}'
-			| SWITCH '{' ExprCaseClauseList '}'
 
 ExprCaseClauseList: ExprCaseClause ExprCaseClauseList
 				| ExprCaseClause
@@ -148,11 +147,6 @@ ExprCaseClauseList: ExprCaseClause ExprCaseClauseList
 ExprCaseClause: ExprSwitchCase ':' Statements
 ExprSwitchCase: CASE ExpressionList | DEFAULT
 
-TypeSwitchStmt: SWITCH TypeSwitchGuard '{'TypeCaseClauseList'}'
-			| SWITCH SimpleStmt SEMICOLON TypeSwitchGuard '{'TypeCaseClauseList'}'
-
-TypeSwitchGuard: id PEQ PrimaryExpr '.' '(' TYPE ')'
-				| PrimaryExpr '.' '(' TYPE ')' 
 TypeCaseClauseList: TypeCaseClause TypeCaseClauseList
 				| TypeCaseClause
 TypeCaseClause: TypeSwitchCase ':' Statements
@@ -245,6 +239,7 @@ Assignment: IdentifierList PEQ ExpressionList
 Expression: UnaryExpr 
 		| Expression binary_op Expression 
 		
+		
 
 binary_op: OR 
 	| AND 
@@ -281,6 +276,7 @@ UnaryExpr: PrimaryExpr
 		| '*' UnaryExpr
 		| '&' UnaryExpr
 		| POINTER UnaryExpr
+
 		
 
 PrimaryExpr: Operand
@@ -318,17 +314,14 @@ BasicLit: int_lit
 		| CONST_STRING
 		| BOOL
 
-CompositeLit: LiteralValue
-		| StructType LiteralValue
+CompositeLit: StructType LiteralValue
 		| ArrayType LiteralValue
-		//| ArrayType
 		| '[' POINT ']' Type LiteralValue
 		| SliceType LiteralValue
-		//| SliceType
 		| MapType LiteralValue
+		| Operand LiteralValue
 		//| TypeName LiteralValue
 		//| TypeName TypeArgs
-		| id LiteralValue
 		
 
 LiteralValue: '{' ElementList '}'
@@ -342,14 +335,13 @@ ElementList: ElementList ',' KeyedElement
 KeyedElement: Key ':' Element
 			| Element
 			
-Key: id 
-	| Expression 
-	| LiteralValue
+Key: Expression 
+	//| LiteralValue
 
 
 
 Element: Expression 
-	| LiteralValue	
+	//| LiteralValue	
 			
 		
 int_lit: CONST_BIN
